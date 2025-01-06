@@ -33,7 +33,7 @@
 
 <MudGrid>
     <MudItem xs="12">
-        <MudTable Items="@_goals" Hover="true" Dense="true" MultiSelection="@_isEditMode" @bind-SelectedItems="_selectedGoals">
+        <MudTable Items="@_goals" Hover="true" Dense="false" MultiSelection="@_isEditMode" @bind-SelectedItems="_selectedGoals">
             <HeaderContent>
                 <MudTh>Name</MudTh>
                 <MudTh>Description</MudTh>

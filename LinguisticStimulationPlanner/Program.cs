@@ -47,6 +47,7 @@ public class Program
 			options.UseSqlite(configuration.GetConnectionString("DefaultConnection")));
         services.AddScoped<LocationService>();
         services.AddScoped<GoalService>();
+        services.AddScoped<ToyService>();
 		services.AddMudServices();
 	}
 }

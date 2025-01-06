@@ -1,19 +1,20 @@
-﻿@page "/location"
-@inject LocationService LocationService
+﻿@page "/toy"
+@inject ToyService ToyService
 @inject IDialogService DialogService
 @using LinguisticStimulationPlanner.Models
 @using LinguisticStimulationPlanner.Services
 @using MudBlazor
-@using Microsoft.AspNetCore.Components
 
 <MudGrid>
     <MudItem xs="12">
-        <MudText Typo="Typo.h4">Location Management</MudText>
+        <MudText Typo="Typo.h4">Toy Management</MudText>
     </MudItem>
 
     <MudItem xs="12">
+        <MudSwitch Color="Color.Primary" @bind-Value="_showInInventoryOnly" Label="Only Inventory" Style="float: right;" />
+
         <MudButtonGroup Style="float: right;" OverrideStyles="false">
-            <MudButton Color="Color.Primary" OnClick="AddNewLocation" StartIcon="@Icons.Material.Filled.Add">
+            <MudButton Color="Color.Primary" OnClick="AddNewToy" StartIcon="@Icons.Material.Filled.Add">
                 Add
             </MudButton>
             <MudButton Color="Color.Primary" OnClick="ToggleEditMode" StartIcon="@(_isEditMode ? Icons.Material.Filled.Save : Icons.Material.Filled.Edit)">
@@ -25,7 +26,7 @@
                     Discard Changes
                 </MudButton>
             }
-            <MudButton Color="Color.Error" IconColor="Color.Error" OnClick="ShowDeleteConfirmationDialog" Disabled="@(_selectedLocations.Count < 1)" StartIcon="@Icons.Material.Filled.Delete">
+            <MudButton Color="Color.Error" IconColor="Color.Error" OnClick="ShowDeleteConfirmationDialog" Disabled="@(_selectedToys.Count < 1)" StartIcon="@Icons.Material.Filled.Delete">
                 Delete
             </MudButton>
         </MudButtonGroup>
@@ -34,10 +35,10 @@
 
 <MudGrid>
     <MudItem xs="12">
-        <MudTable Items="@_locations" Hover="true" Dense="false" MultiSelection="@_isEditMode" @bind-SelectedItems="_selectedLocations">
+        <MudTable Items="@( _showInInventoryOnly ? _toys.Where(t => t.InInventory).ToList() : _toys )" Hover="true" Dense="false" MultiSelection="@_isEditMode" @bind-SelectedItems="_selectedToys">
             <HeaderContent>
                 <MudTh>Name</MudTh>
-                <MudTh>Address</MudTh>
+                <MudTh>In Inventory</MudTh>
             </HeaderContent>
 
             <RowTemplate>
@@ -51,15 +52,8 @@
                         @context.Name
                     }
                 </MudTd>
-                <MudTd DataLabel="Address">
-                    @if (_isEditMode)
-                    {
-                        <MudTextField @bind-Value="context.Address" Immediate="true" />
-                    }
-                    else
-                    {
-                        @context.Address
-                    }
+                <MudTd DataLabel="In Inventory">
+                    <MudCheckBox @bind-Value="context.InInventory" Immediate="true" Disabled="!_isEditMode" />
                 </MudTd>
             </RowTemplate>
         </MudTable>
