@@ -1,0 +1,11 @@
+﻿@using MudBlazor
+
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.h6">@Message</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Color="Color.Default">@CancelButton</MudButton>
+        <MudButton OnClick="Confirm" Color="Color.Error">@ConfirmButton</MudButton>
+    </DialogActions>
+</MudDialog>

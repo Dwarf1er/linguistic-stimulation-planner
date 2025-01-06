@@ -1,7 +1,7 @@
 using LinguisticStimulationPlanner.Components;
 using LinguisticStimulationPlanner.Data;
+using LinguisticStimulationPlanner.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
 using Photino.Blazor;
 
@@ -45,6 +45,7 @@ public class Program
 		services.AddLogging();
 		services.AddDbContext<ApplicationDbContext>(options =>
 			options.UseSqlite(configuration.GetConnectionString("DefaultConnection")));
+        services.AddScoped<LocationService>();
 		services.AddMudServices();
 	}
 }

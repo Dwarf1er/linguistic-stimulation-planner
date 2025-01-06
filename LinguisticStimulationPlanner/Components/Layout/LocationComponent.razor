@@ -1,0 +1,67 @@
+﻿@page "/location"
+@inject LocationService LocationService
+@inject IDialogService DialogService
+@using LinguisticStimulationPlanner.Models
+@using LinguisticStimulationPlanner.Services
+@using MudBlazor
+@using Microsoft.AspNetCore.Components
+
+<MudGrid>
+    <MudItem xs="12">
+        <MudText Typo="Typo.h4">Location Management</MudText>
+    </MudItem>
+
+    <MudItem xs="12">
+        <MudButtonGroup Style="float: right;" OverrideStyles="false">
+            <MudButton Color="Color.Primary" OnClick="AddNewLocation" StartIcon="@Icons.Material.Filled.Add">
+                Add
+            </MudButton>
+            <MudButton Color="Color.Primary" OnClick="ToggleEditMode" StartIcon="@(_isEditMode ? Icons.Material.Filled.Save : Icons.Material.Filled.Edit)">
+                @((_isEditMode ? "Save" : "Edit"))
+            </MudButton>
+            @if (_isEditMode)
+            {
+                <MudButton Color="Color.Primary" OnClick="DiscardChanges" StartIcon="@Icons.Material.Filled.Close">
+                    Discard Changes
+                </MudButton>
+            }
+            <MudButton Color="Color.Error" IconColor="Color.Error" OnClick="ShowDeleteConfirmationDialog" Disabled="@(_selectedLocations.Count < 1)" StartIcon="@Icons.Material.Filled.Delete">
+                Delete
+            </MudButton>
+        </MudButtonGroup>
+    </MudItem>
+</MudGrid>
+
+<MudGrid>
+    <MudItem xs="12">
+        <MudTable Items="@_locations" Hover="true" Dense="true" MultiSelection="@_isEditMode" @bind-SelectedItems="_selectedLocations">
+            <HeaderContent>
+                <MudTh>Name</MudTh>
+                <MudTh>Address</MudTh>
+            </HeaderContent>
+
+            <RowTemplate>
+                <MudTd DataLabel="Name">
+                    @if (_isEditMode)
+                    {
+                        <MudTextField @bind-Value="context.Name" Immediate="true" />
+                    }
+                    else
+                    {
+                        @context.Name
+                    }
+                </MudTd>
+                <MudTd DataLabel="Address">
+                    @if (_isEditMode)
+                    {
+                        <MudTextField @bind-Value="context.Address" Immediate="true" />
+                    }
+                    else
+                    {
+                        @context.Address
+                    }
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </MudItem>
+</MudGrid>
