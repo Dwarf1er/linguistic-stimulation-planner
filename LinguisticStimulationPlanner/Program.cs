@@ -1,6 +1,7 @@
 using LinguisticStimulationPlanner.Components;
 using LinguisticStimulationPlanner.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using MudBlazor.Services;
 using Photino.Blazor;
 
@@ -18,14 +19,9 @@ public class Program
 
         var appBuilder = PhotinoBlazorAppBuilder.CreateDefault(args);
 
-        appBuilder.Services.AddLogging();
-        appBuilder.Services.AddDbContext<ApplicationDbContext>
-        (
-            options => options.UseSqlite(configuration.GetConnectionString("DefaultConnection"))
-        );
-        appBuilder.Services.AddMudServices();
+		ConfigureServices(appBuilder.Services, configuration);
 
-        appBuilder.RootComponents.Add<App>("app");
+		appBuilder.RootComponents.Add<App>("app");
 
         var app = appBuilder.Build();
 
@@ -43,4 +39,12 @@ public class Program
 
         app.Run();
     }
+
+	private static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
+	{
+		services.AddLogging();
+		services.AddDbContext<ApplicationDbContext>(options =>
+			options.UseSqlite(configuration.GetConnectionString("DefaultConnection")));
+		services.AddMudServices();
+	}
 }
