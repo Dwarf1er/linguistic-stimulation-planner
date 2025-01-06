@@ -1,0 +1,66 @@
+﻿@page "/goal"
+@inject GoalService GoalService
+@inject IDialogService DialogService
+@using LinguisticStimulationPlanner.Models
+@using LinguisticStimulationPlanner.Services
+@using MudBlazor
+
+<MudGrid>
+    <MudItem xs="12">
+        <MudText Typo="Typo.h4">Goal Management</MudText>
+    </MudItem>
+
+    <MudItem xs="12">
+        <MudButtonGroup Style="float: right;" OverrideStyles="false">
+            <MudButton Color="Color.Primary" OnClick="AddNewGoal" StartIcon="@Icons.Material.Filled.Add">
+                Add
+            </MudButton>
+            <MudButton Color="Color.Primary" OnClick="ToggleEditMode" StartIcon="@(_isEditMode ? Icons.Material.Filled.Save : Icons.Material.Filled.Edit)">
+                @((_isEditMode ? "Save" : "Edit"))
+            </MudButton>
+            @if (_isEditMode)
+            {
+                <MudButton Color="Color.Primary" OnClick="DiscardChanges" StartIcon="@Icons.Material.Filled.Close">
+                    Discard Changes
+                </MudButton>
+            }
+            <MudButton Color="Color.Error" IconColor="Color.Error" OnClick="ShowDeleteConfirmationDialog" Disabled="@(_selectedGoals.Count < 1)" StartIcon="@Icons.Material.Filled.Delete">
+                Delete
+            </MudButton>
+        </MudButtonGroup>
+    </MudItem>
+</MudGrid>
+
+<MudGrid>
+    <MudItem xs="12">
+        <MudTable Items="@_goals" Hover="true" Dense="true" MultiSelection="@_isEditMode" @bind-SelectedItems="_selectedGoals">
+            <HeaderContent>
+                <MudTh>Name</MudTh>
+                <MudTh>Description</MudTh>
+            </HeaderContent>
+
+            <RowTemplate>
+                <MudTd DataLabel="Name">
+                    @if (_isEditMode)
+                    {
+                        <MudTextField @bind-Value="context.Name" Immediate="true" />
+                    }
+                    else
+                    {
+                        @context.Name
+                    }
+                </MudTd>
+                <MudTd DataLabel="Description">
+                    @if (_isEditMode)
+                    {
+                        <MudTextField @bind-Value="context.Description" Immediate="true" />
+                    }
+                    else
+                    {
+                        @context.Description
+                    }
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </MudItem>
+</MudGrid>
