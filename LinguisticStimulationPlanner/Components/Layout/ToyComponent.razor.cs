@@ -119,16 +119,28 @@ namespace LinguisticStimulationPlanner.Components.Layout
                 { "AssignedGoals", assignedGoals }
             };
 
-            IDialogReference dialog = DialogService.Show<GoalSelectDialog>("Select goals to assign to the toy", parameters);
+            IDialogReference dialog = DialogService.Show<GoalSelectDialog>("Manage Goals", parameters);
             DialogResult result = await dialog.Result;
 
             if (!result.Canceled)
             {
                 List<Goal> selectedGoals = result.Data as List<Goal>;
 
-                List<Goal> goalsToRemove = assignedGoals.Where(g => !selectedGoals.Contains(g)).ToList();
-                await ToyService.DeassignGoalsFromToy(currentToy, goalsToRemove);
-                await ToyService.AssignGoalsToToy(currentToy, selectedGoals);
+                if (selectedGoals != null)
+                {
+                    List<Goal> goalsToRemove = assignedGoals.Where(g => !selectedGoals.Contains(g)).ToList();
+                    List<Goal> goalsToAdd = selectedGoals.Where(g => !assignedGoals.Contains(g)).ToList();
+
+                    if (goalsToRemove.Any())
+                    {
+                        await ToyService.DeassignGoalsFromToy(currentToy, goalsToRemove);
+                    }
+
+                    if (goalsToAdd.Any())
+                    {
+                        await ToyService.AssignGoalsToToy(currentToy, goalsToAdd);
+                    }
+                }
             }
         }
     }

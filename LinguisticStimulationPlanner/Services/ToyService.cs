@@ -60,13 +60,13 @@ namespace LinguisticStimulationPlanner.Services
 
         public async Task DeassignGoalsFromToy(Toy toy, List<Goal> goals)
         {
-            var goalsToRemove = toy.GoalToys
-                .Where(gt => !goals.Any(g => g.Id == gt.GoalId))
-                .ToList();
-
-            foreach (var goalToRemove in goalsToRemove)
+            foreach (var goal in goals)
             {
-                _context.GoalToys.Remove(goalToRemove);
+                var goalToy = toy.GoalToys.FirstOrDefault(gt => gt.GoalId == goal.Id);
+                if (goalToy != null)
+                {
+                    toy.GoalToys.Remove(goalToy);
+                }
             }
 
             await _context.SaveChangesAsync();
