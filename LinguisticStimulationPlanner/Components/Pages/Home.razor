@@ -1,3 +1,56 @@
 ﻿@page "/"
+@using MudBlazor
 
-<MudText>Hello World!</MudText>
+<MudContainer MaxWidth="MaxWidth.ExtraSmall" Class="mt-4">
+    <MudText Typo="Typo.h4" Align="Align.Center" Class="mb-4">Where would you like to go?</MudText>
+    <MudGrid Spacing="3">
+        <MudItem xs="4" sm="4" md="4">
+            <MudCard Elevation="@homeElevation" @onmouseover="() => homeElevation = 25" @onmouseout="() => homeElevation = 4">
+                <MudCardContent>
+                    <MudIcon Icon="@Icons.Material.Filled.Home" Size="Size.Large" Class="mb-2" />
+                    <MudButton Href="/" Color="Color.Primary" Typo="Typo.subtitle1" Align="Align.Center">Home</MudButton>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="4" sm="4" md="4">
+            <MudCard Elevation="@locationElevation" @onmouseover="() => locationElevation = 25" @onmouseout="() => locationElevation = 4">
+                <MudCardContent>
+                    <MudIcon Icon="@Icons.Material.Filled.PinDrop" Size="Size.Large" Class="mb-2" />
+                    <MudButton Href="/location" Color="Color.Primary" Typo="Typo.subtitle1" Align="Align.Center">Locations</MudButton>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="4" sm="4" md="4">
+            <MudCard Elevation="@goalElevation" @onmouseover="() => goalElevation = 25" @onmouseout="() => goalElevation = 4">
+                <MudCardContent>
+                    <MudIcon Icon="@Icons.Material.Filled.Flag" Size="Size.Large" Class="mb-2" />
+                    <MudButton Href="/goal" Color="Color.Primary" Typo="Typo.subtitle1" Align="Align.Center">Goals</MudButton>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="4" sm="4" md="4">
+            <MudCard Elevation="@toyElevation" @onmouseover="() => toyElevation = 25" @onmouseout="() => toyElevation = 4">
+                <MudCardContent>
+                    <MudIcon Icon="@Icons.Material.Filled.Toys" Size="Size.Large" Class="mb-2" />
+                    <MudButton Href="/toy" Color="Color.Primary" Typo="Typo.subtitle1" Align="Align.Center">Toys</MudButton>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="4" sm="4" md="4">
+            <MudCard Elevation="@patientElevation" @onmouseover="() => patientElevation = 25" @onmouseout="() => patientElevation = 4">
+                <MudCardContent>
+                    <MudIcon Icon="@Icons.Material.Filled.Person" Size="Size.Large" Class="mb-2" />
+                    <MudButton Href="/patient" Color="Color.Primary" Typo="Typo.subtitle1" Align="Align.Center">Patients</MudButton>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        <MudItem xs="4" sm="4" md="4">
+            <MudCard Elevation="@planElevation" @onmouseover="() => planElevation = 25" @onmouseout="() => planElevation = 4">
+                <MudCardContent>
+                    <MudIcon Icon="@Icons.Material.Filled.Map" Size="Size.Large" Class="mb-2" />
+                    <MudButton Href="/plan" Color="Color.Primary" Typo="Typo.subtitle1" Align="Align.Center">Plans</MudButton>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+</MudContainer>
