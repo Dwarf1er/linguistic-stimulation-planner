@@ -10,8 +10,8 @@ namespace LinguisticStimulationPlanner.Components.Layout
         private List<Location> _locations = new List<Location>();
         private HashSet<Location> _selectedLocations = new HashSet<Location>();
         private Location _newLocation = new Location();
-        private bool _isEditMode = false;
         private List<Location> _originalLocations = new List<Location>();
+        private bool _isEditMode = false;
 
         protected override async Task OnInitializedAsync()
         {
@@ -19,7 +19,7 @@ namespace LinguisticStimulationPlanner.Components.Layout
             _originalLocations = _locations.Select(location => new Location { Id = location.Id, Name = location.Name, Address = location.Address }).ToList();
         }
 
-        private async Task SaveLocation(Location location)
+        private async Task SaveLocationAsync(Location location)
         {
             if (location.Id == 0)
             {
@@ -32,23 +32,28 @@ namespace LinguisticStimulationPlanner.Components.Layout
 
             _locations = await LocationService.GetLocationsAsync();
             _originalLocations = _locations.Select(location => new Location { Id = location.Id, Name = location.Name, Address = location.Address }).ToList();
+            _selectedLocations.Clear();
         }
 
-        private async Task SaveAllLocations()
+        private async Task SaveAllLocationsAsync()
         {
             _isEditMode = false;
 
-            foreach (var location in _locations)
+            List<Location> validLocations = _locations.Where(location => location.IsValidLocation()).ToList();
+            foreach (Location validLocation in validLocations)
             {
-                await SaveLocation(location);
+                await SaveLocationAsync(validLocation);
             }
+
+            _selectedLocations.Clear();
         }
 
-        private async Task DeleteSelectedLocations()
+        private async Task DeleteSelectedLocationsAsync()
         {
             _isEditMode = false;
 
-            foreach (var location in _selectedLocations)
+            List<Location> locationsToDelete = _selectedLocations.ToList();
+            foreach (Location location in locationsToDelete)
             {
                 await LocationService.DeleteLocationAsync(location.Id);
             }
@@ -63,41 +68,45 @@ namespace LinguisticStimulationPlanner.Components.Layout
             _locations.Insert(0, _newLocation);
             _isEditMode = true;
             _newLocation = new Location();
+            _selectedLocations.Clear();
         }
 
         private void ToggleEditMode()
         {
             if (_isEditMode)
             {
-                SaveAllLocations();
+                SaveAllLocationsAsync();
             }
             else
             {
                 _isEditMode = true;
             }
+
+            _selectedLocations.Clear();
         }
 
         private void DiscardChanges()
         {
             _locations = _originalLocations.Select(location => new Location { Id = location.Id, Name = location.Name, Address = location.Address }).ToList();
             _isEditMode = false;
+            _selectedLocations.Clear();
         }
 
-        private async Task ShowDeleteConfirmationDialog()
+        private async Task ShowDeleteConfirmationDialogAsync()
         {
-            var parameters = new DialogParameters
+            DialogParameters parameters = new DialogParameters
             {
                 { "Message", "Are you sure you want to delete the selected locations?" },
                 { "ConfirmButton", "Delete" },
                 { "CancelButton", "Cancel" }
             };
 
-            var dialog = DialogService.Show<ConfirmationDialog>("Delete Locations", parameters);
-            var result = await dialog.Result;
+            IDialogReference dialog = DialogService.Show<ConfirmationDialog>("Delete Locations", parameters);
+            DialogResult result = await dialog.Result;
 
             if (!result.Canceled)
             {
-                await DeleteSelectedLocations();
+                await DeleteSelectedLocationsAsync();
             }
         }
 

@@ -9,5 +9,10 @@
 		public ICollection<PatientGoal> PatientGoals { get; set; } = new List<PatientGoal>();
 		public ICollection<PlanGoal> PlanGoals { get; set; } = new List<PlanGoal>();
 		public ICollection<GoalToy> GoalToys { get; set; } = new List<GoalToy>();
+
+		public bool IsValidGoal()
+		{
+			return !(string.IsNullOrEmpty(Name) || string.IsNullOrEmpty(Description));
+		}
 	}
 }

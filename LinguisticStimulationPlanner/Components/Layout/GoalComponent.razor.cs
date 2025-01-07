@@ -18,7 +18,7 @@ namespace LinguisticStimulationPlanner.Components.Layout
             _originalGoals = _goals.Select(goal => new Goal { Id = goal.Id, Name = goal.Name, Description = goal.Description }).ToList();
         }
 
-        private async Task SaveGoal(Goal goal)
+        private async Task SaveGoalAsync(Goal goal)
         {
             if (goal.Id == 0)
             {
@@ -31,23 +31,28 @@ namespace LinguisticStimulationPlanner.Components.Layout
 
             _goals = await GoalService.GetGoalsAsync();
             _originalGoals = _goals.Select(goal => new Goal { Id = goal.Id, Name = goal.Name, Description = goal.Description }).ToList();
+            _selectedGoals.Clear();
         }
 
-        private async Task SaveAllGoals()
+        private async Task SaveAllGoalsAsync()
         {
             _isEditMode = false;
 
-            foreach (var goal in _goals)
+            List<Goal> validGoals = _goals.Where(goal => goal.IsValidGoal()).ToList();
+            foreach (Goal validGoal in validGoals)
             {
-                await SaveGoal(goal);
+                await SaveGoalAsync(validGoal);
             }
+
+            _selectedGoals.Clear();
         }
 
-        private async Task DeleteSelectedGoals()
+        private async Task DeleteSelectedGoalsAsync()
         {
             _isEditMode = false;
 
-            foreach (var goal in _selectedGoals)
+            List<Goal> goalsToDelete = _selectedGoals.ToList();
+            foreach (Goal goal in goalsToDelete)
             {
                 await GoalService.DeleteGoalAsync(goal.Id);
             }
@@ -62,41 +67,45 @@ namespace LinguisticStimulationPlanner.Components.Layout
             _goals.Insert(0, _newGoal);
             _isEditMode = true;
             _newGoal = new Goal();
+            _selectedGoals.Clear();
         }
 
         private void ToggleEditMode()
         {
             if (_isEditMode)
             {
-                SaveAllGoals();
+                SaveAllGoalsAsync();
             }
             else
             {
                 _isEditMode = true;
             }
+
+            _selectedGoals.Clear();
         }
 
         private void DiscardChanges()
         {
             _goals = _originalGoals.Select(goal => new Goal { Id = goal.Id, Name = goal.Name, Description = goal.Description }).ToList();
             _isEditMode = false;
+            _selectedGoals.Clear();
         }
 
-        private async Task ShowDeleteConfirmationDialog()
+        private async Task ShowDeleteConfirmationDialogAsync()
         {
-            var parameters = new DialogParameters
-        {
-            { "Message", "Are you sure you want to delete the selected goals?" },
-            { "ConfirmButton", "Delete" },
-            { "CancelButton", "Cancel" }
-        };
+            DialogParameters parameters = new DialogParameters
+            {
+                { "Message", "Are you sure you want to delete the selected goals?" },
+                { "ConfirmButton", "Delete" },
+                { "CancelButton", "Cancel" }
+            };
 
-            var dialog = DialogService.Show<ConfirmationDialog>("Delete Goals", parameters);
-            var result = await dialog.Result;
+            IDialogReference dialog = DialogService.Show<ConfirmationDialog>("Delete Goals", parameters);
+            DialogResult result = await dialog.Result;
 
             if (!result.Canceled)
             {
-                await DeleteSelectedGoals();
+                await DeleteSelectedGoalsAsync();
             }
         }
     }

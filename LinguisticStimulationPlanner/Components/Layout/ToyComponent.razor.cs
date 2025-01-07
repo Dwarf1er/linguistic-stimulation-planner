@@ -20,7 +20,7 @@ namespace LinguisticStimulationPlanner.Components.Layout
             _originalToys = _toys.Select(toy => new Toy { Id = toy.Id, Name = toy.Name, InInventory = toy.InInventory }).ToList();
         }
 
-        private async Task SaveToy(Toy toy)
+        private async Task SaveToyAsync(Toy toy)
         {
             if (toy.Id == 0)
             {
@@ -33,23 +33,26 @@ namespace LinguisticStimulationPlanner.Components.Layout
 
             _toys = await ToyService.GetToysAsync();
             _originalToys = _toys.Select(toy => new Toy { Id = toy.Id, Name = toy.Name, InInventory = toy.InInventory }).ToList();
+            _selectedToys.Clear();
         }
 
-        private async Task SaveAllToys()
+        private async Task SaveAllToysAsync()
         {
             _isEditMode = false;
 
-            foreach (var toy in _toys)
+            List<Toy> validToys = _toys.Where(toy => toy.IsValidToy()).ToList();
+            foreach (Toy validToy in validToys)
             {
-                await SaveToy(toy);
+                await SaveToyAsync(validToy);
             }
         }
 
-        private async Task DeleteSelectedToys()
+        private async Task DeleteSelectedToysAsync()
         {
             _isEditMode = false;
 
-            foreach (var toy in _selectedToys)
+            List<Toy> toysToDelete = _selectedToys.ToList();
+            foreach (Toy toy in toysToDelete)
             {
                 await ToyService.DeleteToyAsync(toy.Id);
             }
@@ -64,62 +67,66 @@ namespace LinguisticStimulationPlanner.Components.Layout
             _toys.Insert(0, _newToy);
             _isEditMode = true;
             _newToy = new Toy();
+            _selectedToys.Clear();
         }
 
         private void ToggleEditMode()
         {
             if (_isEditMode)
             {
-                SaveAllToys();
+                SaveAllToysAsync();
             }
             else
             {
                 _isEditMode = true;
             }
+
+            _selectedToys.Clear();
         }
 
         private void DiscardChanges()
         {
             _toys = _originalToys.Select(toy => new Toy { Id = toy.Id, Name = toy.Name, InInventory = toy.InInventory }).ToList();
             _isEditMode = false;
+            _selectedToys.Clear();
         }
 
-        private async Task ShowDeleteConfirmationDialog()
+        private async Task ShowDeleteConfirmationDialogAsync()
         {
-            var parameters = new DialogParameters
+            DialogParameters parameters = new DialogParameters
             {
                 { "Message", "Are you sure you want to delete the selected toys?" },
                 { "ConfirmButton", "Delete" },
                 { "CancelButton", "Cancel" }
             };
 
-            var dialog = DialogService.Show<ConfirmationDialog>("Delete Toys", parameters);
-            var result = await dialog.Result;
+            IDialogReference dialog = DialogService.Show<ConfirmationDialog>("Delete Toys", parameters);
+            DialogResult result = await dialog.Result;
 
             if (!result.Canceled)
             {
-                await DeleteSelectedToys();
+                await DeleteSelectedToysAsync();
             }
         }
 
-        private async Task ShowGoalSelectDialog(Toy currentToy)
+        private async Task ShowGoalSelectDialogAsync(Toy currentToy)
         {
-            var assignedGoals = currentToy.GoalToys.Select(gt => gt.Goal).ToList();
+            List<Goal> assignedGoals = currentToy.GoalToys.Select(gt => gt.Goal).ToList();
 
-            var parameters = new DialogParameters
+            DialogParameters parameters = new DialogParameters
             {
                 { "Message", "Select goals to assign to the toy" },
                 { "AssignedGoals", assignedGoals }
             };
 
-            var dialog = DialogService.Show<GoalSelectDialog>("Select goals to assign to the toy", parameters);
-            var result = await dialog.Result;
+            IDialogReference dialog = DialogService.Show<GoalSelectDialog>("Select goals to assign to the toy", parameters);
+            DialogResult result = await dialog.Result;
 
             if (!result.Canceled)
             {
-                var selectedGoals = result.Data as List<Goal>;
+                List<Goal> selectedGoals = result.Data as List<Goal>;
 
-                var goalsToRemove = assignedGoals.Where(g => !selectedGoals.Contains(g)).ToList();
+                List<Goal> goalsToRemove = assignedGoals.Where(g => !selectedGoals.Contains(g)).ToList();
                 await ToyService.DeassignGoalsFromToy(currentToy, goalsToRemove);
                 await ToyService.AssignGoalsToToy(currentToy, selectedGoals);
             }

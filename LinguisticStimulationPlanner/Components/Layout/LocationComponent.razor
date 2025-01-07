@@ -25,7 +25,7 @@
                     Discard Changes
                 </MudButton>
             }
-            <MudButton Color="Color.Error" IconColor="Color.Error" OnClick="ShowDeleteConfirmationDialog" Disabled="@(_selectedLocations.Count < 1 || !_isEditMode)" StartIcon="@Icons.Material.Filled.Delete">
+            <MudButton Color="Color.Error" IconColor="Color.Error" OnClick="ShowDeleteConfirmationDialogAsync" Disabled="@(_selectedLocations.Count < 1 || !_isEditMode)" StartIcon="@Icons.Material.Filled.Delete">
                 Delete
             </MudButton>
         </MudButtonGroup>
@@ -44,7 +44,7 @@
                 <MudTd DataLabel="Name">
                     @if (_isEditMode)
                     {
-                        <MudTextField @bind-Value="context.Name" Immediate="true" />
+                        <MudTextField @bind-Value="context.Name" Immediate="true" Required="true" />
                     }
                     else
                     {
@@ -54,7 +54,7 @@
                 <MudTd DataLabel="Address">
                     @if (_isEditMode)
                     {
-                        <MudTextField @bind-Value="context.Address" Immediate="true" />
+                        <MudTextField @bind-Value="context.Address" Immediate="true" Required="true" />
                     }
                     else
                     {

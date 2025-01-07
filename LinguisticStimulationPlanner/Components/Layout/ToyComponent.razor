@@ -26,7 +26,7 @@
                     Discard Changes
                 </MudButton>
             }
-            <MudButton Color="Color.Error" IconColor="Color.Error" OnClick="ShowDeleteConfirmationDialog" Disabled="@(_selectedToys.Count < 1 || _isEditMode)" StartIcon="@Icons.Material.Filled.Delete">
+            <MudButton Color="Color.Error" IconColor="Color.Error" OnClick="ShowDeleteConfirmationDialogAsync" Disabled="@(_selectedToys.Count < 1 || !_isEditMode)" StartIcon="@Icons.Material.Filled.Delete">
                 Delete
             </MudButton>
         </MudButtonGroup>
@@ -46,7 +46,7 @@
                 <MudTd DataLabel="Name">
                     @if (_isEditMode)
                     {
-                        <MudTextField @bind-Value="context.Name" Immediate="true" />
+                        <MudTextField @bind-Value="context.Name" Immediate="true" Required="true" />
                     }
                     else
                     {
@@ -60,7 +60,7 @@
                     }
                     @if (_isEditMode)
                     {
-                        <MudFab Color="Color.Primary" Size="Size.Small" StartIcon="@Icons.Material.Filled.Add" OnClick="() => ShowGoalSelectDialog(context)"/>
+                        <MudFab Color="Color.Primary" Size="Size.Small" StartIcon="@Icons.Material.Filled.Add" OnClick="() => ShowGoalSelectDialogAsync(context)"/>
                     }
                 </MudTd>
                 <MudTd DataLabel="In Inventory">

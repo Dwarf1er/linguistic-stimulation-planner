@@ -7,5 +7,10 @@
 		public bool InInventory { get; set; }
 
 		public ICollection<GoalToy> GoalToys { get; set; } = new List<GoalToy>();
+
+		public bool IsValidToy()
+		{
+			return !(string.IsNullOrEmpty(Name));
+		}
 	}
 }
