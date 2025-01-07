@@ -12,9 +12,10 @@
 		public ICollection<PatientGoal> PatientGoals { get; set; } = new List<PatientGoal>();
 		public ICollection<Plan> Plans { get; set; } = new List<Plan>();
 
-		public bool IsValidPatient()
-		{
-            return !(string.IsNullOrEmpty(Name) || string.IsNullOrEmpty(Language) || (Location != null && !Location.IsValidLocation()));
+        public bool IsValidPatient()
+        {
+			bool test = !(string.IsNullOrEmpty(Name) || string.IsNullOrEmpty(Language) || string.IsNullOrEmpty(Email));
+			return test;
         }
-	}
+    }
 }

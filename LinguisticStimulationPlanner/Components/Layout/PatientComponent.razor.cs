@@ -31,6 +31,10 @@ namespace LinguisticStimulationPlanner.Components.Layout
             {
                 await PatientService.UpdatePatientAsync(patient);
             }
+
+            _patients = await PatientService.GetPatientsAsync();
+            _originalPatients = _patients.Select(patient => new Patient { Id = patient.Id, Name = patient.Name, Language = patient.Language, Email = patient.Email, LocationId = patient.LocationId, Location = patient.Location }).ToList();
+            _selectedPatients.Clear();
         }
 
         private async Task SaveAllPatientsAsync()
