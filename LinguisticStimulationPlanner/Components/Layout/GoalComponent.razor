@@ -24,7 +24,7 @@
                     Discard Changes
                 </MudButton>
             }
-            <MudButton Color="Color.Error" IconColor="Color.Error" OnClick="ShowDeleteConfirmationDialog" Disabled="@(_selectedGoals.Count < 1)" StartIcon="@Icons.Material.Filled.Delete">
+            <MudButton Color="Color.Error" IconColor="Color.Error" OnClick="ShowDeleteConfirmationDialog" Disabled="@(_selectedGoals.Count < 1 || !_isEditMode)" StartIcon="@Icons.Material.Filled.Delete">
                 Delete
             </MudButton>
         </MudButtonGroup>

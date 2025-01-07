@@ -87,11 +87,11 @@ namespace LinguisticStimulationPlanner.Components.Layout
         private async Task ShowDeleteConfirmationDialog()
         {
             var parameters = new DialogParameters
-        {
-            { "Message", "Are you sure you want to delete the selected toys?" },
-            { "ConfirmButton", "Delete" },
-            { "CancelButton", "Cancel" }
-        };
+            {
+                { "Message", "Are you sure you want to delete the selected toys?" },
+                { "ConfirmButton", "Delete" },
+                { "CancelButton", "Cancel" }
+            };
 
             var dialog = DialogService.Show<ConfirmationDialog>("Delete Toys", parameters);
             var result = await dialog.Result;
@@ -99,6 +99,29 @@ namespace LinguisticStimulationPlanner.Components.Layout
             if (!result.Canceled)
             {
                 await DeleteSelectedToys();
+            }
+        }
+
+        private async Task ShowGoalSelectDialog(Toy currentToy)
+        {
+            var assignedGoals = currentToy.GoalToys.Select(gt => gt.Goal).ToList();
+
+            var parameters = new DialogParameters
+            {
+                { "Message", "Select goals to assign to the toy" },
+                { "AssignedGoals", assignedGoals }
+            };
+
+            var dialog = DialogService.Show<GoalSelectDialog>("Select goals to assign to the toy", parameters);
+            var result = await dialog.Result;
+
+            if (!result.Canceled)
+            {
+                var selectedGoals = result.Data as List<Goal>;
+
+                var goalsToRemove = assignedGoals.Where(g => !selectedGoals.Contains(g)).ToList();
+                await ToyService.DeassignGoalsFromToy(currentToy, goalsToRemove);
+                await ToyService.AssignGoalsToToy(currentToy, selectedGoals);
             }
         }
     }

@@ -1,0 +1,23 @@
+﻿@using MudBlazor
+@using LinguisticStimulationPlanner.Models
+@using LinguisticStimulationPlanner.Services
+@inject GoalService GoalService
+
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.h6">@Message</MudText>
+        <MudList T="GoalWithCheck">
+            @foreach (var goalWithCheck in _allGoalWithChecks)
+
+            {
+                <MudListItem>
+                    <MudCheckBox T="bool" @bind-Value="goalWithCheck.IsChecked" Label="@goalWithCheck.Goal.Name" />
+                </MudListItem>
+            }
+        </MudList>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel" Color="Color.Default">@CancelButton</MudButton>
+        <MudButton OnClick="Confirm" Color="Color.Error">@ConfirmButton</MudButton>
+    </DialogActions>
+</MudDialog>

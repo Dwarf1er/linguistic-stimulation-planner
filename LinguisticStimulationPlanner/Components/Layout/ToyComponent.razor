@@ -26,7 +26,7 @@
                     Discard Changes
                 </MudButton>
             }
-            <MudButton Color="Color.Error" IconColor="Color.Error" OnClick="ShowDeleteConfirmationDialog" Disabled="@(_selectedToys.Count < 1)" StartIcon="@Icons.Material.Filled.Delete">
+            <MudButton Color="Color.Error" IconColor="Color.Error" OnClick="ShowDeleteConfirmationDialog" Disabled="@(_selectedToys.Count < 1 || _isEditMode)" StartIcon="@Icons.Material.Filled.Delete">
                 Delete
             </MudButton>
         </MudButtonGroup>
@@ -38,6 +38,7 @@
         <MudTable Items="@( _showInInventoryOnly ? _toys.Where(t => t.InInventory).ToList() : _toys )" Hover="true" Dense="false" MultiSelection="@_isEditMode" @bind-SelectedItems="_selectedToys">
             <HeaderContent>
                 <MudTh>Name</MudTh>
+                <MudTh>Assigned Goals</MudTh>
                 <MudTh>In Inventory</MudTh>
             </HeaderContent>
 
@@ -50,6 +51,16 @@
                     else
                     {
                         @context.Name
+                    }
+                </MudTd>
+                <MudTd DataLabel="Assigned Goals">
+                    @foreach (var goal in context.GoalToys.Select(gt => gt.Goal))
+                    {
+                        <MudChip T="string" Color="Color.Primary">@goal.Name</MudChip>
+                    }
+                    @if (_isEditMode)
+                    {
+                        <MudFab Color="Color.Primary" Size="Size.Small" StartIcon="@Icons.Material.Filled.Add" OnClick="() => ShowGoalSelectDialog(context)"/>
                     }
                 </MudTd>
                 <MudTd DataLabel="In Inventory">
