@@ -1,0 +1,114 @@
+﻿@page "/patient"
+@inject PatientService PatientService
+@inject LocationService LocationService
+@inject IDialogService DialogService
+@using LinguisticStimulationPlanner.Models
+@using LinguisticStimulationPlanner.Services
+@using LinguisticStimulationPlanner.Utilities
+@using MudBlazor
+
+<MudGrid>
+    <MudItem xs="12">
+        <MudText Typo="Typo.h4">Patient Management</MudText>
+    </MudItem>
+
+    <MudItem xs="12">
+        <MudButtonGroup Style="float: right;" OverrideStyles="false">
+            <MudButton Color="Color.Primary" OnClick="AddNewPatient" StartIcon="@Icons.Material.Filled.Add">
+                Add
+            </MudButton>
+            <MudButton Color="Color.Primary" OnClick="ToggleEditMode" StartIcon="@(_isEditMode ? Icons.Material.Filled.Save : Icons.Material.Filled.Edit)">
+                @((_isEditMode ? "Save" : "Edit"))
+            </MudButton>
+            @if (_isEditMode)
+            {
+                <MudButton Color="Color.Primary" OnClick="DiscardChanges" StartIcon="@Icons.Material.Filled.Close">
+                    Discard Changes
+                </MudButton>
+            }
+            <MudButton Color="Color.Error" IconColor="Color.Error" OnClick="ShowDeleteConfirmationDialogAsync" Disabled="@(_selectedPatients.Count < 1 || !_isEditMode)" StartIcon="@Icons.Material.Filled.Delete">
+                Delete
+            </MudButton>
+        </MudButtonGroup>
+    </MudItem>
+</MudGrid>
+
+<MudGrid>
+    <MudItem xs="12">
+        <MudTable Items="@_patients" Hover="true" Dense="false" MultiSelection="@_isEditMode" @bind-SelectedItems="_selectedPatients">
+            <HeaderContent>
+                <MudTh>Name</MudTh>
+                <MudTh>Language</MudTh>
+                <MudTh>Email</MudTh>
+                <MudTh>Location</MudTh>
+                <MudTh>Assigned Goals</MudTh>
+            </HeaderContent>
+
+            <RowTemplate>
+                <MudTd DataLabel="Name">
+                    @if (_isEditMode)
+                    {
+                        <MudTextField @bind-Value="context.Name" Immediate="true" />
+                    }
+                    else
+                    {
+                        @context.Name
+                    }
+                </MudTd>
+
+                <MudTd DataLabel="Language">
+                    @if (_isEditMode)
+                    {
+                        <MudSelect T="string" @bind-Value="context.Language">
+                            <MudSelectItem T="string" Value="@LanguageOptions.French">FR</MudSelectItem>
+                            <MudSelectItem T="string" Value="@LanguageOptions.English">EN</MudSelectItem>
+                            <MudSelectItem T="string" Value="@LanguageOptions.FrenchAndEnglish">FR/EN</MudSelectItem>
+                        </MudSelect>
+                    }
+                    else
+                    {
+                        @context.Language
+                    }
+                </MudTd>
+
+                <MudTd DataLabel="Email">
+                    @if (_isEditMode)
+                    {
+                        <MudTextField @bind-Value="context.Email" Immediate="true" />
+                    }
+                    else
+                    {
+                        @context.Email
+                    }
+                </MudTd>
+
+                <MudTd DataLabel="Location">
+                    @if (_isEditMode)
+                    {
+                        <MudSelect @bind-Value="context.LocationId" T="int">
+                            @foreach (Location location in _locations)
+                            {
+                                <MudSelectItem T="int" Value="location.Id">@location.Name</MudSelectItem>
+                            }
+                        </MudSelect>
+                    }
+                    else
+                    {
+                        @context.Location?.Name
+                    }
+                </MudTd>
+
+                <MudTd DataLabel="Assigned Goals">
+                    @foreach (Goal goal in context.PatientGoals.Select(pg => pg.Goal))
+                    {
+                        <MudChip T="string" Color="Color.Primary">@goal.Name</MudChip>
+                    }
+                    @if (_isEditMode)
+                    {
+                        <MudFab Color="Color.Tertiary" Size="Size.Small" StartIcon="@Icons.Material.Filled.Add" OnClick="() => ShowGoalSelectDialogAsync(context)"/>
+                    }
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </MudItem>
+</MudGrid>

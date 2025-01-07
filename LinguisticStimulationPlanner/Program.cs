@@ -46,6 +46,7 @@ public class Program
 		services.AddDbContext<ApplicationDbContext>(options =>
 			options.UseSqlite(configuration.GetConnectionString("DefaultConnection")));
         services.AddScoped<LocationService>();
+        services.AddScoped<PatientService>();
         services.AddScoped<GoalService>();
         services.AddScoped<ToyService>();
 		services.AddMudServices();

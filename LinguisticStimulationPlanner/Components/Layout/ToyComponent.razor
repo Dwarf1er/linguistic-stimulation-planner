@@ -54,7 +54,7 @@
                     }
                 </MudTd>
                 <MudTd DataLabel="Assigned Goals">
-                    @foreach (var goal in context.GoalToys.Select(gt => gt.Goal))
+                    @foreach (Goal goal in context.GoalToys.Select(gt => gt.Goal))
                     {
                         <MudChip T="string" Color="Color.Primary">@goal.Name</MudChip>
                     }
