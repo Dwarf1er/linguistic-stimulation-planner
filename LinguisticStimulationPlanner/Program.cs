@@ -1,6 +1,7 @@
-using LinguisticStimulationPlanner.Components;
 using LinguisticStimulationPlanner.Data;
 using LinguisticStimulationPlanner.Services;
+using LinguisticStimulationPlanner.Utilities;
+using LinguisticStimulationPlanner.Components;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 using Photino.Blazor;
@@ -12,14 +13,10 @@ public class Program
     [STAThread]
     public static void Main(string[] args)
     {
-        var configuration = new ConfigurationBuilder()
-            .SetBasePath(AppContext.BaseDirectory)
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            .Build();
-
         var appBuilder = PhotinoBlazorAppBuilder.CreateDefault(args);
 
-		ConfigureServices(appBuilder.Services, configuration);
+		ConfigureServices(appBuilder.Services/*, configuration*/);
+        DatabaseSetup.SetupDatabase();
 
 		appBuilder.RootComponents.Add<App>("app");
 
@@ -40,11 +37,14 @@ public class Program
         app.Run();
     }
 
-	private static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
+	private static void ConfigureServices(IServiceCollection services)
 	{
+        string databasePath = DatabaseSetup.GetDatabasePath();
+
 		services.AddLogging();
 		services.AddDbContext<ApplicationDbContext>(options =>
-			options.UseSqlite(configuration.GetConnectionString("DefaultConnection")));
+			options.UseSqlite($"Data Source={databasePath}"));
+
         services.AddScoped<GoalService>();
         services.AddScoped<LocationService>();
         services.AddScoped<PatientService>();
