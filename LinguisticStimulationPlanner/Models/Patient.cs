@@ -10,7 +10,6 @@
 		public Location Location { get; set; }
 
 		public ICollection<PatientGoal> PatientGoals { get; set; } = new List<PatientGoal>();
-		public ICollection<Plan> Plans { get; set; } = new List<Plan>();
 
         public bool IsValidPatient()
         {

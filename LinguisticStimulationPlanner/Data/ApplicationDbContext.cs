@@ -15,9 +15,6 @@ namespace LinguisticStimulationPlanner.Data
 		public DbSet<Location> Locations { get; set; }
 		public DbSet<Patient> Patients { get; set; }
 		public DbSet<PatientGoal> PatientGoals { get; set; }
-		public DbSet<Plan> Plans { get; set; }
-		public DbSet<PlanGoal> PlanGoals { get; set; }
-		public DbSet<PlanGoalToy> PlanGoalToys { get; set; }
 		public DbSet<Toy> Toys { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -43,19 +40,6 @@ namespace LinguisticStimulationPlanner.Data
 				.WithMany(p => p.PatientGoals)
 				.HasForeignKey(pg => pg.GoalId);
 
-			modelBuilder.Entity<PlanGoal>()
-				.HasKey(pg => new { pg.PlanId, pg.GoalId });
-
-			modelBuilder.Entity<PlanGoal>()
-				.HasOne(pg => pg.Plan)
-				.WithMany(p => p.PlanGoals)
-				.HasForeignKey(pg => pg.PlanId);
-
-			modelBuilder.Entity<PlanGoal>()
-				.HasOne(pg => pg.Goal)
-				.WithMany(pg => pg.PlanGoals)
-				.HasForeignKey(pg => pg.GoalId);
-
 			modelBuilder.Entity<GoalToy>()
 				.HasKey(gt => new { gt.GoalId, gt.ToyId });
 
@@ -68,24 +52,6 @@ namespace LinguisticStimulationPlanner.Data
 				.HasOne(gt => gt.Toy)
 				.WithMany(t => t.GoalToys)
 				.HasForeignKey(gt => gt.ToyId);
-
-            modelBuilder.Entity<PlanGoalToy>()
-                .HasKey(pgt => new { pgt.PlanId, pgt.GoalId, pgt.ToyId });
-
-            modelBuilder.Entity<PlanGoalToy>()
-                .HasOne(pgt => pgt.Plan)
-                .WithMany(p => p.PlanGoalToys)
-                .HasForeignKey(pgt => pgt.PlanId);
-
-            modelBuilder.Entity<PlanGoalToy>()
-                .HasOne(pgt => pgt.Goal)
-                .WithMany(g => g.PlanGoalToys)
-                .HasForeignKey(pgt => pgt.GoalId);
-
-            modelBuilder.Entity<PlanGoalToy>()
-                .HasOne(pgt => pgt.Toy)
-                .WithMany(t => t.PlanGoalToys)
-                .HasForeignKey(pgt => pgt.ToyId);
         }
 	}
 }
