@@ -7,5 +7,7 @@
 
 		public int GoalId { get; set; }
 		public Goal Goal { get; set; }
+
+		public ICollection<PlanGoalToy> PlanGoalToys { get; set; } = new List<PlanGoalToy>();
 	}
 }

@@ -10,5 +10,6 @@
 		public string Notes { get; set; }
 
 		public ICollection<PlanGoal> PlanGoals { get; set; } = new List<PlanGoal>();
+		public ICollection<PlanGoalToy> PlanGoalToys { get; set; } = new List<PlanGoalToy>();
 	}
 }

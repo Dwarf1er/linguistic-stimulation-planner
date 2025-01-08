@@ -9,6 +9,7 @@
 		public ICollection<PatientGoal> PatientGoals { get; set; } = new List<PatientGoal>();
 		public ICollection<PlanGoal> PlanGoals { get; set; } = new List<PlanGoal>();
 		public ICollection<GoalToy> GoalToys { get; set; } = new List<GoalToy>();
+		public ICollection<PlanGoalToy> PlanGoalToys { get; set; } = new List<PlanGoalToy>();
 
 		public bool IsValidGoal()
 		{
