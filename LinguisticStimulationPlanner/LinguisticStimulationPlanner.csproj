@@ -21,14 +21,13 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.0" />
-    <PackageReference Include="MudBlazor" Version="7.15.0" />
     <PackageReference Include="Photino.Blazor" Version="3.2.0" />
   </ItemGroup>
 
 	<ItemGroup>
 		<EmbeddedResource Include="wwwroot\**" />
+		<EmbeddedResource Include="..\Common\bin\Release\net8.0\publish\wwwroot\**\*" />
 	</ItemGroup>
-
 	
 	<ItemGroup>
 		<Content Update="wwwroot\**">
@@ -41,4 +40,9 @@
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
+	
+	<ItemGroup>
+	  <ProjectReference Include="..\Common\Common.csproj" />
+	</ItemGroup>
+	
 </Project>
