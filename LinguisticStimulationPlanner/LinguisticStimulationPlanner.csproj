@@ -33,16 +33,16 @@
 	<Target Name="NormalizeLogicalName" BeforeTargets="BeforeBuild">
 		<ItemGroup>
 			<EmbeddedResource>
-				<NormalizedLogicalName>
-					$([System.String]::Copy('%(RecursiveDir)').Replace('\', '.'))%(Filename)%(Extension)
-				</NormalizedLogicalName>
+				<LogicalName>
+					$(AssemblyName).wwwroot.$([System.String]::Copy('%(RecursiveDir)').Replace('\', '.'))%(Filename)%(Extension)
+				</LogicalName>
 			</EmbeddedResource>
 		</ItemGroup>
 	</Target>
 
 	<ItemGroup>
-		<Content Update="wwwroot\**">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		<Content Update="wwwroot\**\*">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>
 
