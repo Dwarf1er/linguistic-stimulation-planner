@@ -13,6 +13,7 @@ namespace LinguisticStimulationPlanner
         [STAThread]
         public static void Main(string[] args)
         {
+            bool _isDevelopmentEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
             PhotinoBlazorAppBuilder appBuilder = PhotinoBlazorAppBuilder.CreateDefault(args);
 
             ConfigureServices(appBuilder.Services);
@@ -24,8 +25,8 @@ namespace LinguisticStimulationPlanner
 
             app.MainWindow
                 .SetSize(1400, 800)
-                .SetDevToolsEnabled(true)
                 .SetLogVerbosity(0)
+                .SetDevToolsEnabled(_isDevelopmentEnvironment)
                 //.SetIconFile("favicon.ico")
                 .SetTitle("Linguistic Stimulation Planner");
 

@@ -30,8 +30,18 @@
 
 	<ItemGroup>
 		<EmbeddedResource Include="wwwroot\**" />
-		<EmbeddedResource Include="..\Common\bin\Release\net8.0\publish\wwwroot\**" />
+		<EmbeddedResource Include="..\Common\bin\Release\net8.0\publish\wwwroot\**\*" />
 	</ItemGroup>
+	
+	<Target Name="NormalizeLogicalName" BeforeTargets="BeforeBuild">
+		<ItemGroup>
+			<EmbeddedResource>
+				<NormalizedLogicalName>
+					$([System.String]::Copy('%(RecursiveDir)').Replace('\', '.'))%(Filename)%(Extension)
+				</NormalizedLogicalName>
+			</EmbeddedResource>
+		</ItemGroup>
+	</Target>
 
 	<ItemGroup>
 		<Content Update="wwwroot\**">

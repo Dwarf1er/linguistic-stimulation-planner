@@ -10,7 +10,7 @@
     </PropertyGroup>
 	
     <ItemGroup>
-        <Content Include="wwwroot\**" CopyToPublishDirectory="Always" />
+        <Content Include="wwwroot\**\*" CopyToPublishDirectory="Always" />
     </ItemGroup>
 
     <ItemGroup>
