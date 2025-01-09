@@ -1,12 +1,16 @@
 ﻿using LinguisticStimulationPlanner.Components.Dialog;
 using LinguisticStimulationPlanner.Models;
 using LinguisticStimulationPlanner.Services;
+using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
 namespace LinguisticStimulationPlanner.Components.Layout
 {
-    public partial class ToyComponent
+    public partial class ToyComponent : ComponentBase
     {
+        [Inject] public ToyService ToyService { get; set; }
+        [Inject] public IDialogService DialogService { get; set; }
+
         private List<Toy> _toys = new List<Toy>();
         private HashSet<Toy> _selectedToys = new HashSet<Toy>();
         private Toy _newToy = new Toy();

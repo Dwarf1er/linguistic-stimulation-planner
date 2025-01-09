@@ -1,9 +1,6 @@
 ﻿@page "/toy"
-@inject ToyService ToyService
-@inject IDialogService DialogService
+@inherits ComponentBase
 @using LinguisticStimulationPlanner.Models
-@using LinguisticStimulationPlanner.Services
-@using MudBlazor
 
 <MudGrid>
     <MudItem xs="12">
@@ -64,7 +61,7 @@
                     }
                 </MudTd>
                 <MudTd DataLabel="In Inventory">
-                    <MudCheckBox @bind-Value="context.InInventory" Immediate="true" Disabled="!_isEditMode" />
+                    <MudCheckBox @bind-Value="context.InInventory" Disabled="!_isEditMode" />
                 </MudTd>
             </RowTemplate>
         </MudTable>

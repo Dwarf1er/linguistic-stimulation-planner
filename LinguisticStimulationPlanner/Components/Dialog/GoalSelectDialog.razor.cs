@@ -1,12 +1,15 @@
 ﻿using LinguisticStimulationPlanner.Models;
+using LinguisticStimulationPlanner.Services;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
 namespace LinguisticStimulationPlanner.Components.Dialog
 {
-    public partial class GoalSelectDialog
+    public partial class GoalSelectDialog : ComponentBase
     {
         private List<GoalWithCheck> _allGoalWithChecks = new List<GoalWithCheck>();
+
+        [Inject] public GoalService GoalService { get; set; }
 
         [Parameter] public string Message { get; set; }
         [Parameter] public string ConfirmButton { get; set; } = "Confirm";

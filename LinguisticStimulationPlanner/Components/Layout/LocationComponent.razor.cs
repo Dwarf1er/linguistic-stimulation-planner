@@ -2,11 +2,15 @@
 using LinguisticStimulationPlanner.Services;
 using LinguisticStimulationPlanner.Components.Dialog;
 using MudBlazor;
+using Microsoft.AspNetCore.Components;
 
 namespace LinguisticStimulationPlanner.Components.Layout
 {
-    public partial class LocationComponent
+    public partial class LocationComponent : ComponentBase
     {
+        [Inject] public LocationService LocationService { get; set; }
+        [Inject] public IDialogService DialogService { get; set; }
+
         private List<Location> _locations = new List<Location>();
         private HashSet<Location> _selectedLocations = new HashSet<Location>();
         private Location _newLocation = new Location();

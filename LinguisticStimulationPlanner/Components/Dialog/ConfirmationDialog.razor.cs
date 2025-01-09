@@ -3,7 +3,7 @@ using MudBlazor;
 
 namespace LinguisticStimulationPlanner.Components.Dialog
 {
-    public partial class ConfirmationDialog
+    public partial class ConfirmationDialog : ComponentBase
     {
         [Parameter] public string Message { get; set; }
         [Parameter] public string ConfirmButton { get; set; } = "Confirm";

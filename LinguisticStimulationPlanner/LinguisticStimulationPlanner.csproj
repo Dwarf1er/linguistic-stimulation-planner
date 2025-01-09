@@ -3,23 +3,17 @@
   <PropertyGroup>
 	<OutputType>WinExe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
+	<ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
     <ApplicationIcon>favicon.ico</ApplicationIcon>
     <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
 	<SelfContained>true</SelfContained>
 	<PublishSingleFile>true</PublishSingleFile>
 	<IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
 	<IncludeNativeLibrairiesForSelfExtract>true</IncludeNativeLibrairiesForSelfExtract>
-	<PublishTrimmed>false</PublishTrimmed>
 	<EnableCompressionInSingleFile>true</EnableCompressionInSingleFile>
-	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
-	<EnableDefaultContent>true</EnableDefaultContent>
-    <EnableDefaultContentItems>true</EnableDefaultContentItems>
+	<DebugType>embedded</DebugType>	
   </PropertyGroup>
-
-  <ItemGroup>
-    <SupportedPlatform Include="browser" />
-  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
@@ -27,23 +21,25 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.0" />
+    <PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="9.0.0" />
     <PackageReference Include="MudBlazor" Version="7.15.0" />
     <PackageReference Include="Photino.Blazor" Version="3.2.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Content Update="wwwroot\**" CopyToOutputDirectory="PreserveNewest" />
-    <None Include="favicon.ico" CopyToOutputDirectory="PreserveNewest" />
-    <Folder Include="Migrations\" />
-  </ItemGroup>
+	<ItemGroup>
+		<EmbeddedResource Include="wwwroot\**" />
+	</ItemGroup>
+
 	
-  <Target AfterTargets="Publish" Name="MovePublishedSingleFile">
-    <ItemGroup>
-      <PublishFile Include="$(PublishDir)\*" />
-    </ItemGroup>
-    <Move
-      SourceFiles="@(PublishFile)"
-      DestinationFolder="$(ProjectDir)\publish\build\$(AssemblyName).$(Version).$(RuntimeIdentifier)" />
-  </Target>
+	<ItemGroup>
+		<Content Update="wwwroot\**">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</Content>
+	</ItemGroup>
 	
+	<ItemGroup>
+		<None Include="favicon.ico">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 </Project>

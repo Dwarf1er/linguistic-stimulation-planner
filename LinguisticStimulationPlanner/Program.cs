@@ -5,50 +5,52 @@ using LinguisticStimulationPlanner.Components;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 using Photino.Blazor;
+using Microsoft.Extensions.FileProviders;
 
-namespace LinguisticStimulationPlanner;
-
-public class Program
+namespace LinguisticStimulationPlanner
 {
-    [STAThread]
-    public static void Main(string[] args)
+    public class Program
     {
-        var appBuilder = PhotinoBlazorAppBuilder.CreateDefault(args);
-
-		ConfigureServices(appBuilder.Services/*, configuration*/);
-        DatabaseSetup.SetupDatabase();
-
-		appBuilder.RootComponents.Add<App>("app");
-
-        var app = appBuilder.Build();
-
-        app.MainWindow
-            .SetSize(1400, 800)
-            .SetDevToolsEnabled(true)
-            .SetLogVerbosity(0)
-            .SetIconFile("favicon.ico")
-            .SetTitle("Linguistic Stimulation Planner");
-
-        AppDomain.CurrentDomain.UnhandledException += (sender, error) =>
+        [STAThread]
+        public static void Main(string[] args)
         {
-            app.MainWindow.ShowMessage("Fatal exception", error.ExceptionObject.ToString());
-        };
+            PhotinoBlazorAppBuilder appBuilder = PhotinoBlazorAppBuilder.CreateDefault(args);
 
-        app.Run();
+            ConfigureServices(appBuilder.Services);
+            DatabaseSetup.SetupDatabase();
+
+            appBuilder.RootComponents.Add<App>("app");
+
+            PhotinoBlazorApp app = appBuilder.Build();
+
+            app.MainWindow
+                .SetSize(1400, 800)
+                .SetDevToolsEnabled(true)
+                .SetLogVerbosity(0)
+                //.SetIconFile("favicon.ico")
+                .SetTitle("Linguistic Stimulation Planner");
+
+            AppDomain.CurrentDomain.UnhandledException += (sender, error) =>
+            {
+                app.MainWindow.ShowMessage("Fatal exception", error.ExceptionObject.ToString());
+            };
+
+            app.Run();
+        }
+
+        private static void ConfigureServices(IServiceCollection services)
+        {
+            string databasePath = DatabaseSetup.GetDatabasePath();
+
+            services.AddLogging();
+            services.AddMudServices();
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlite($"Data Source={databasePath}"));
+
+            services.AddScoped<GoalService>();
+            services.AddScoped<LocationService>();
+            services.AddScoped<PatientService>();
+            services.AddScoped<ToyService>();
+        }
     }
-
-	private static void ConfigureServices(IServiceCollection services)
-	{
-        string databasePath = DatabaseSetup.GetDatabasePath();
-
-		services.AddLogging();
-		services.AddDbContext<ApplicationDbContext>(options =>
-			options.UseSqlite($"Data Source={databasePath}"));
-
-        services.AddScoped<GoalService>();
-        services.AddScoped<LocationService>();
-        services.AddScoped<PatientService>();
-        services.AddScoped<ToyService>();
-		services.AddMudServices();
-	}
 }

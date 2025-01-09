@@ -2,11 +2,16 @@
 using LinguisticStimulationPlanner.Services;
 using LinguisticStimulationPlanner.Components.Dialog;
 using MudBlazor;
+using Microsoft.AspNetCore.Components;
 
 namespace LinguisticStimulationPlanner.Components.Layout
 {
-    public partial class PatientComponent
+    public partial class PatientComponent : ComponentBase
     {
+        [Inject] PatientService PatientService { get; set; }
+        [Inject] LocationService LocationService { get; set; }
+        [Inject] IDialogService DialogService { get; set; }
+
         private List<Location> _locations = new List<Location>();
         private List<Patient> _patients = new List<Patient>();
         private HashSet<Patient> _selectedPatients = new HashSet<Patient>();

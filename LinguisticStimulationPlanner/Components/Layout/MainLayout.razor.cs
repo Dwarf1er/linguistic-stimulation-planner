@@ -1,8 +1,9 @@
-﻿using MudBlazor;
+﻿using Microsoft.AspNetCore.Components;
+using MudBlazor;
 
 namespace LinguisticStimulationPlanner.Components.Layout
 {
-	public partial class MainLayout
+	public partial class MainLayout : LayoutComponentBase
 	{
 		public required MudThemeProvider _mudThemeProvider;
 		private MudTheme _mudTheme = AppThemeProvider.GetTheme();

@@ -1,11 +1,16 @@
 ﻿using LinguisticStimulationPlanner.Components.Dialog;
 using LinguisticStimulationPlanner.Models;
+using LinguisticStimulationPlanner.Services;
+using Microsoft.AspNetCore.Components;
 using MudBlazor;
 
 namespace LinguisticStimulationPlanner.Components.Layout
 {
-    public partial class GoalComponent
+    public partial class GoalComponent : ComponentBase
     {
+        [Inject] public GoalService GoalService { get; set; }
+        [Inject] public IDialogService DialogService { get; set; }
+
         private List<Goal> _goals = new List<Goal>();
         private HashSet<Goal> _selectedGoals = new HashSet<Goal>();
         private Goal _newGoal = new Goal();
