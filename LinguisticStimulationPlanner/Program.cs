@@ -5,7 +5,6 @@ using LinguisticStimulationPlanner.Components;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 using Photino.Blazor;
-using Microsoft.Extensions.FileProviders;
 
 namespace LinguisticStimulationPlanner
 {
