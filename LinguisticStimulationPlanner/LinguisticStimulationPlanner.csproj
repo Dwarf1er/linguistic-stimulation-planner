@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net8.0</TargetFramework>
-		<ApplicationIcon>favicon.ico</ApplicationIcon>
+		<ApplicationIcon>wwwroot/favicon.ico</ApplicationIcon>
 		<PublishSingleFile>true</PublishSingleFile>
 		<SelfContained>true</SelfContained>
 		<IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
@@ -31,8 +31,8 @@
 
 	<ItemGroup>
 		<EmbeddedResource Include="wwwroot\**" />
-		<EmbeddedResource Include="..\Common\bin\Release\net8.0\publish\**"/>
-		<EmbeddedResource Remove="..\Common\bin\Release\net8.0\publish\*.*"/>
+		<EmbeddedResource Include="..\Common\bin\Release\net8.0\publish\**" />
+		<EmbeddedResource Remove="..\Common\bin\Release\net8.0\publish\*.*" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -42,9 +42,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Include="favicon.ico">
-			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
-		</None>
+		<None Include="wwwroot\favicon.ico" />
 	</ItemGroup>
 
 	<ItemGroup>

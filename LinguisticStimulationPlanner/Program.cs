@@ -29,7 +29,7 @@ namespace LinguisticStimulationPlanner
                 .SetSize(1400, 800)
                 .SetLogVerbosity(0)
                 .SetDevToolsEnabled(true)
-                //.SetIconFile("favicon.ico")
+                .SetIconFile("wwwroot/favicon.ico")
                 .SetTitle("Linguistic Stimulation Planner");
 
             AppDomain.CurrentDomain.UnhandledException += (sender, error) =>
