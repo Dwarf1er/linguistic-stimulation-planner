@@ -11,7 +11,7 @@
 		<DebugType>embedded</DebugType>
 		<PublishAot>false</PublishAot>
 	</PropertyGroup>
-	
+
 	<ItemGroup>
 		<PackageReference Include="Microsoft.AspNetCore.Components.WebView" Version="8.0.10" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0">
@@ -20,10 +20,10 @@
 		</PackageReference>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.0" />
 		<PackageReference Include="Microsoft.Extensions.FileProviders.Embedded" Version="9.0.0" />
-        <PackageReference Include="MudBlazor" Version="7.15.0" />
+		<PackageReference Include="MudBlazor" Version="7.15.0" />
 		<PackageReference Include="Photino.Blazor" Version="3.2.0" />
 	</ItemGroup>
-	
+
 	<ItemGroup Condition="$(RuntimeIdentifier.StartsWith('win'))">
 		<RdXmlFile Include="rd.xml" />
 		<RdXmlFile Include="Microsoft.AspNetCore.Components.Web.rd.xml" />
@@ -31,18 +31,9 @@
 
 	<ItemGroup>
 		<EmbeddedResource Include="wwwroot\**" />
-		<EmbeddedResource Include="..\Common\bin\Release\net8.0\publish\wwwroot\**" />
+		<EmbeddedResource Include="..\Common\bin\Release\net8.0\publish\**"/>
+		<EmbeddedResource Remove="..\Common\bin\Release\net8.0\publish\*.*"/>
 	</ItemGroup>
-	
-	<Target Name="NormalizeLogicalName" BeforeTargets="BeforeBuild">
-		<ItemGroup>
-			<EmbeddedResource>
-				<LogicalName>
-					$(AssemblyName).wwwroot.$([System.String]::Copy('%(RecursiveDir)').Replace('\', '.'))%(Filename)%(Extension)
-				</LogicalName>
-			</EmbeddedResource>
-		</ItemGroup>
-	</Target>
 
 	<ItemGroup>
 		<Content Update="wwwroot\**">
@@ -57,7 +48,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Migrations\" />
+		<Folder Include="Migrations\" />
+		<Folder Include="wwwroot\_content\" />
 	</ItemGroup>
-	
+
 </Project>
