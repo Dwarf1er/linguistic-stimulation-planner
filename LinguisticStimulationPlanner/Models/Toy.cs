@@ -1,4 +1,6 @@
-﻿namespace LinguisticStimulationPlanner.Models
+﻿using System.Collections.Generic;
+
+namespace LinguisticStimulationPlanner.Models
 {
 	public class Toy
 	{

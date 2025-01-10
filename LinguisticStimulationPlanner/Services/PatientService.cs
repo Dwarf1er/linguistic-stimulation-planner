@@ -1,6 +1,9 @@
 ﻿using LinguisticStimulationPlanner.Models;
 using LinguisticStimulationPlanner.Data;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace LinguisticStimulationPlanner.Services
 {

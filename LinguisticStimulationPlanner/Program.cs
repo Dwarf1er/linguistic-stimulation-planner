@@ -5,6 +5,9 @@ using LinguisticStimulationPlanner.Components;
 using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 using Photino.Blazor;
+using Microsoft.Extensions.FileProviders;
+using System;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LinguisticStimulationPlanner
 {
@@ -13,7 +16,6 @@ namespace LinguisticStimulationPlanner
         [STAThread]
         public static void Main(string[] args)
         {
-            bool _isDevelopmentEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
             PhotinoBlazorAppBuilder appBuilder = PhotinoBlazorAppBuilder.CreateDefault(args);
 
             ConfigureServices(appBuilder.Services);
@@ -26,7 +28,7 @@ namespace LinguisticStimulationPlanner
             app.MainWindow
                 .SetSize(1400, 800)
                 .SetLogVerbosity(0)
-                .SetDevToolsEnabled(_isDevelopmentEnvironment)
+                .SetDevToolsEnabled(true)
                 //.SetIconFile("favicon.ico")
                 .SetTitle("Linguistic Stimulation Planner");
 
@@ -43,6 +45,7 @@ namespace LinguisticStimulationPlanner
             string databasePath = DatabaseSetup.GetDatabasePath();
 
             services.AddLogging();
+            services.AddSingleton<IFileProvider>(_ => new ManifestEmbeddedFileProvider(typeof(Program).Assembly, "wwwroot"));
             services.AddMudServices();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite($"Data Source={databasePath}"));
