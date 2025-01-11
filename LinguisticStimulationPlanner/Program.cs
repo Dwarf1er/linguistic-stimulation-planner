@@ -8,6 +8,7 @@ using Photino.Blazor;
 using Microsoft.Extensions.FileProviders;
 using System;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 namespace LinguisticStimulationPlanner
 {
@@ -32,7 +33,12 @@ namespace LinguisticStimulationPlanner
                 .SetIconFile("wwwroot/favicon.ico")
                 .SetTitle("Linguistic Stimulation Planner");
 
-            app.Services.GetRequiredService<TempFileService>().CleanTemporaryFiles();
+            AppDomain.CurrentDomain.ProcessExit += (sender, eventArgs) =>
+            {
+                using var serviceProvider = app.Services.CreateScope();
+                var tempFileService = serviceProvider.ServiceProvider.GetRequiredService<TempFileService>();
+                tempFileService.CleanTemporaryFiles();
+            };
 
             AppDomain.CurrentDomain.UnhandledException += (sender, error) =>
             {

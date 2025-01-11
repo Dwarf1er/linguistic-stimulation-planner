@@ -8,9 +8,8 @@ namespace LinguisticStimulationPlanner.Services
 {
     public class TempFileService
     {
-        private static readonly string VersionFileName = "app_hash.txt";
+        private static readonly string HashFileName = "app_hash.txt";
         private static readonly string CurrentHash = GetCurrentHash();
-
         private readonly ILogger<TempFileService> _logger;
 
         public TempFileService(ILogger<TempFileService> logger)
@@ -21,27 +20,36 @@ namespace LinguisticStimulationPlanner.Services
         public void CleanTemporaryFiles()
         {
             string tempDirectory = GetTempDirectory();
-            string versionFilePath = Path.Combine(tempDirectory, VersionFileName);
-
-            if (File.Exists(versionFilePath))
-            {
-                string previousVersion = File.ReadAllText(versionFilePath);
-
-                if (previousVersion == CurrentHash)
-                {
-                    return;
-                }
-            }
+            string hashFilePath = Path.Combine(tempDirectory, HashFileName);
 
             try
             {
-                if (Directory.Exists(tempDirectory))
+                if (File.Exists(hashFilePath))
                 {
-                    Directory.Delete(tempDirectory, true);
-                }
+                    string previousHash = File.ReadAllText(hashFilePath);
 
-                Directory.CreateDirectory(tempDirectory);
-                File.WriteAllText(versionFilePath, CurrentHash);
+                    if (previousHash == CurrentHash)
+                    {
+                        return;
+                    }
+
+                    if (Directory.Exists(tempDirectory))
+                    {
+                        Directory.Delete(tempDirectory, true);
+                    }
+
+                    Directory.CreateDirectory(tempDirectory);
+                    File.WriteAllText(hashFilePath, CurrentHash);
+                }
+                else
+                {
+                    if (!Directory.Exists(tempDirectory))
+                    {
+                        Directory.CreateDirectory(tempDirectory);
+                    }
+
+                    File.WriteAllText(hashFilePath, CurrentHash);
+                }
             }
             catch (Exception ex)
             {
