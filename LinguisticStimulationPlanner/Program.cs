@@ -8,7 +8,6 @@ using Photino.Blazor;
 using Microsoft.Extensions.FileProviders;
 using System;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace LinguisticStimulationPlanner
 {

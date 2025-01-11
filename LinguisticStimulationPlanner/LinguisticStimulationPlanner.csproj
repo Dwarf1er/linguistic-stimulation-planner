@@ -23,6 +23,13 @@
 		<PackageReference Include="MudBlazor" Version="7.15.0" />
 		<PackageReference Include="Photino.Blazor" Version="3.2.0" />
 	</ItemGroup>
+	
+	<Target Name="CopyGitHooks" AfterTargets="AfterBuild">
+		<ItemGroup>
+			<GitHooks Include="..\.githooks\commit-msg" />
+		</ItemGroup>
+		<Copy SourceFiles="@(GitHooks)" DestinationFolder="./../.git/hooks" />
+	</Target>
 
 	<ItemGroup Condition="$(RuntimeIdentifier.StartsWith('win'))">
 		<RdXmlFile Include="rd.xml" />

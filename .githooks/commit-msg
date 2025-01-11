@@ -1,0 +1,27 @@
+#!/bin/sh
+
+# Help message with commit format instructions
+HELP_MESSAGE="🚨 Your commit message must follow the Conventional Commits specification:
+- 🔑 Type (feat, fix, ci, chore, docs, test, style, refactor)
+- 🔍 Optional scope in parentheses
+- 📝 A colon and a short description after the type
+- 🕒 The commit message must be no longer than 50 characters for the subject line
+
+Example:
+  feat(auth): add login feature
+  fix(api): handle undefined errors
+For more information consult: https://www.conventionalcommits.org"
+
+# Check if the commit message follows the conventional commit format
+if ! head -1 "$1" | grep -qE "^(feat|fix|ci|chore|docs|test|style|refactor)(\(.+?\))?: .{1,}$"; then
+    echo "❌ Aborting commit. Your commit message is invalid." >&2
+    echo "$HELP_MESSAGE" >&2
+    exit 1
+fi
+
+# Check if the commit message exceeds the 50 character limit for the subject line
+if ! head -1 "$1" | grep -qE "^.{1,50}$"; then
+    echo "❌ Aborting commit. Your commit message is too long." >&2
+    echo "📝 The subject line must be no longer than 50 characters." >&2
+    exit 1
+fi
