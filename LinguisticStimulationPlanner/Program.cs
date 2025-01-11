@@ -28,7 +28,7 @@ namespace LinguisticStimulationPlanner
             app.MainWindow
                 .SetSize(1400, 800)
                 .SetLogVerbosity(0)
-                .SetDevToolsEnabled(true)
+                .SetDevToolsEnabled(EnvironmentInfo.IsDevelopment)
                 .SetIconFile("wwwroot/favicon.ico")
                 .SetTitle("Linguistic Stimulation Planner");
 

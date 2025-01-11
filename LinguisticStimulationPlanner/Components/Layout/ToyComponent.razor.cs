@@ -17,6 +17,7 @@ namespace LinguisticStimulationPlanner.Components.Layout
         private List<Toy> _toys = new List<Toy>();
         private HashSet<Toy> _selectedToys = new HashSet<Toy>();
         private Toy _newToy = new Toy();
+        private List<Goal> _newToyGoals = new List<Goal>();
         private bool _isEditMode = false;
         private List<Toy> _originalToys = new List<Toy>();
         private bool _showInInventoryOnly = false;
@@ -32,7 +33,13 @@ namespace LinguisticStimulationPlanner.Components.Layout
             if (toy.Id == 0)
             {
                 await ToyService.CreateToyAsync(toy);
+
+                if(_newToyGoals.Any())
+                {
+                    await ToyService.AssignGoalsToToyAsync(toy, _newToyGoals);
+                }
             }
+
             else
             {
                 await ToyService.UpdateToyAsync(toy);
@@ -69,10 +76,11 @@ namespace LinguisticStimulationPlanner.Components.Layout
             _originalToys = _toys.Select(toy => new Toy { Id = toy.Id, Name = toy.Name, InInventory = toy.InInventory }).ToList();
         }
 
-        private void AddNewToy()
+        private async void AddNewToy()
         {
             _toys.Insert(0, _newToy);
             _isEditMode = true;
+            _newToyGoals = new List<Goal>();
             _newToy = new Toy();
             _selectedToys.Clear();
         }
@@ -118,6 +126,11 @@ namespace LinguisticStimulationPlanner.Components.Layout
 
         private async Task ShowGoalSelectDialogAsync(Toy currentToy)
         {
+            if (currentToy.Id == 0)
+            {
+                currentToy = _newToy;
+            }
+
             List<Goal> assignedGoals = currentToy.GoalToys.Select(gt => gt.Goal).ToList();
 
             DialogParameters parameters = new DialogParameters
@@ -135,17 +148,25 @@ namespace LinguisticStimulationPlanner.Components.Layout
 
                 if (selectedGoals != null)
                 {
-                    List<Goal> goalsToRemove = assignedGoals.Where(g => !selectedGoals.Contains(g)).ToList();
-                    List<Goal> goalsToAdd = selectedGoals.Where(g => !assignedGoals.Contains(g)).ToList();
-
-                    if (goalsToRemove.Any())
+                    if ( currentToy.Id == 0)
                     {
-                        await ToyService.DeassignGoalsFromToy(currentToy, goalsToRemove);
+                        _newToyGoals = selectedGoals;
                     }
 
-                    if (goalsToAdd.Any())
+                    else
                     {
-                        await ToyService.AssignGoalsToToy(currentToy, goalsToAdd);
+                        List<Goal> goalsToRemove = assignedGoals.Where(g => !selectedGoals.Contains(g)).ToList();
+                        List<Goal> goalsToAdd = selectedGoals.Where(g => !assignedGoals.Contains(g)).ToList();
+
+                        if (goalsToRemove.Any())
+                        {
+                            await ToyService.DeassignGoalsFromToy(currentToy, goalsToRemove);
+                        }
+
+                        if (goalsToAdd.Any())
+                        {
+                            await ToyService.AssignGoalsToToyAsync(currentToy, goalsToAdd);
+                        }
                     }
                 }
             }

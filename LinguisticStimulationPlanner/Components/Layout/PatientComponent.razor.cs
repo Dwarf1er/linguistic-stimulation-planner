@@ -19,6 +19,7 @@ namespace LinguisticStimulationPlanner.Components.Layout
         private List<Patient> _patients = new List<Patient>();
         private HashSet<Patient> _selectedPatients = new HashSet<Patient>();
         private Patient _newPatient = new Patient();
+        private List<Goal> _newPatientGoals = new List<Goal>();
         private bool _isEditMode = false;
         private List<Patient> _originalPatients = new List<Patient>();
 
@@ -34,6 +35,11 @@ namespace LinguisticStimulationPlanner.Components.Layout
             if (patient.Id == 0)
             {
                 await PatientService.CreatePatientAsync(patient);
+
+                if(_newPatientGoals.Any())
+                {
+                    await PatientService.AssignGoalsToPatient(patient, _newPatientGoals);
+                }
             }
             else
             {
@@ -75,6 +81,7 @@ namespace LinguisticStimulationPlanner.Components.Layout
         {
             _patients.Insert(0, _newPatient);
             _isEditMode = true;
+            _newPatientGoals = new List<Goal>();
             _newPatient = new Patient();
             _selectedPatients.Clear();
         }
@@ -120,6 +127,11 @@ namespace LinguisticStimulationPlanner.Components.Layout
 
         private async Task ShowGoalSelectDialogAsync(Patient currentPatient)
         {
+            if (currentPatient.Id == 0)
+            {
+                currentPatient = _newPatient;
+            }
+
             List<Goal> assignedGoals = currentPatient.PatientGoals.Select(gt => gt.Goal).ToList();
 
             DialogParameters parameters = new DialogParameters
@@ -137,17 +149,25 @@ namespace LinguisticStimulationPlanner.Components.Layout
 
                 if (selectedGoals != null)
                 {
-                    List<Goal> goalsToRemove = assignedGoals.Where(g => !selectedGoals.Contains(g)).ToList();
-                    List<Goal> goalsToAdd = selectedGoals.Where(g => !assignedGoals.Contains(g)).ToList();
-
-                    if (goalsToRemove.Any())
+                    if (currentPatient.Id == 0)
                     {
-                        await PatientService.DeassignGoalsFromPatient(currentPatient, goalsToRemove);
+                        _newPatientGoals = selectedGoals;
                     }
 
-                    if (goalsToAdd.Any())
+                    else
                     {
-                        await PatientService.AssignGoalsToPatient(currentPatient, goalsToAdd);
+                        List<Goal> goalsToRemove = assignedGoals.Where(g => !selectedGoals.Contains(g)).ToList();
+                        List<Goal> goalsToAdd = selectedGoals.Where(g => !assignedGoals.Contains(g)).ToList();
+
+                        if (goalsToRemove.Any())
+                        {
+                            await PatientService.DeassignGoalsFromPatient(currentPatient, goalsToRemove);
+                        }
+
+                        if (goalsToAdd.Any())
+                        {
+                            await PatientService.AssignGoalsToPatient(currentPatient, goalsToAdd);
+                        }
                     }
                 }
             }

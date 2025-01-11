@@ -45,7 +45,7 @@ namespace LinguisticStimulationPlanner.Services
             }
         }
 
-        public async Task AssignGoalsToToy(Toy toy, List<Goal> goals)
+        public async Task AssignGoalsToToyAsync(Toy toy, List<Goal> goals)
         {
             foreach (var goal in goals)
             {

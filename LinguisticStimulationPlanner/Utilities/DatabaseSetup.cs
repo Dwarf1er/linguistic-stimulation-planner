@@ -7,11 +7,9 @@ namespace LinguisticStimulationPlanner.Utilities
 {
     public static class DatabaseSetup
     {
-        private static readonly bool _isDevelopmentEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development";
-
         public static string GetDatabasePath()
         {
-            if (_isDevelopmentEnvironment)
+            if (EnvironmentInfo.IsDevelopment)
             {
                 return "./Data/Database.db";
             }
@@ -24,7 +22,7 @@ namespace LinguisticStimulationPlanner.Utilities
         {
             string databasePath = GetDatabasePath();
 
-            if (_isDevelopmentEnvironment)
+            if (EnvironmentInfo.IsDevelopment)
             {
                 return;
             }
