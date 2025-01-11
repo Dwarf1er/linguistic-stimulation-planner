@@ -32,6 +32,8 @@ namespace LinguisticStimulationPlanner
                 .SetIconFile("wwwroot/favicon.ico")
                 .SetTitle("Linguistic Stimulation Planner");
 
+            app.Services.GetRequiredService<TempFileService>().CleanTemporaryFiles();
+
             AppDomain.CurrentDomain.UnhandledException += (sender, error) =>
             {
                 app.MainWindow.ShowMessage("Fatal exception", error.ExceptionObject.ToString());
@@ -46,6 +48,7 @@ namespace LinguisticStimulationPlanner
 
             services.AddLogging();
             services.AddSingleton<IFileProvider>(_ => new ManifestEmbeddedFileProvider(typeof(Program).Assembly, "wwwroot"));
+            services.AddSingleton<TempFileService>();
             services.AddMudServices();
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite($"Data Source={databasePath}"));
