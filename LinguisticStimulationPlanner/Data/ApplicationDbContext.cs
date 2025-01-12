@@ -27,7 +27,7 @@ namespace LinguisticStimulationPlanner.Data
 				.HasOne(p => p.Location)
 				.WithMany(l => l.Patients)
 				.HasForeignKey(p => p.LocationId)
-				.OnDelete(DeleteBehavior.Restrict);
+				.OnDelete(DeleteBehavior.Cascade);
 
 			modelBuilder.Entity<PatientGoal>()
 				.HasKey(pg => new { pg.PatientId, pg.GoalId });
@@ -59,7 +59,7 @@ namespace LinguisticStimulationPlanner.Data
                 .HasOne(p => p.Patient)
                 .WithMany(pat => pat.Plans)
                 .HasForeignKey(p => p.PatientId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<PlanGoal>()
                 .HasOne(pg => pg.Plan)
@@ -71,7 +71,7 @@ namespace LinguisticStimulationPlanner.Data
                 .HasOne(pg => pg.Goal)
                 .WithMany()
                 .HasForeignKey(pg => pg.GoalId)
-                .OnDelete(DeleteBehavior.Restrict);
+                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<PlanGoal>()
                 .HasOne(pg => pg.Toy)

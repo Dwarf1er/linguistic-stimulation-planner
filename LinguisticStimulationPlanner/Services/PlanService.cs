@@ -1,7 +1,6 @@
 ﻿using LinguisticStimulationPlanner.Data;
 using LinguisticStimulationPlanner.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -19,33 +18,11 @@ namespace LinguisticStimulationPlanner.Services
 
         public async Task<List<Plan>> GetPlansAsync()
         {
-            return await _context.Plans.ToListAsync();
-        }
-
-        private async Task<bool> IsValidGoalForPatientAsync(int patientId, int goalId)
-        {
-            return await _context.PatientGoals
-                .AnyAsync(pg => pg.PatientId == patientId && pg.GoalId == goalId);
-        }
-
-        private async Task<bool> IsValidToyForGoalAsync(int goalId, int toyId)
-        {
-            return await _context.GoalToys
-                .AnyAsync(gt => gt.GoalId == goalId && gt.ToyId == toyId);
-        }
-
-        public bool IsPlanModified(Plan plan)
-        {
-            var originalPlan = _context.Plans.AsNoTracking().FirstOrDefault(p => p.Id == plan.Id);
-
-            if (originalPlan == null) return false;
-
-            return originalPlan.StartDate != plan.StartDate
-                   || originalPlan.EndDate != plan.EndDate
-                   || originalPlan.Notes != plan.Notes
-                   || originalPlan.PatientId != plan.PatientId
-                   || originalPlan.PlanGoals.Count != plan.PlanGoals.Count
-                   || originalPlan.PlanGoals.Any(pg => !plan.PlanGoals.Any(p => p.GoalId == pg.GoalId && p.ToyId == pg.ToyId));
+            return await _context.Plans.Include(p => p.PlanGoals)
+                .ThenInclude(pg => pg.Goal)
+                .ThenInclude(g => g.GoalToys)
+                .ThenInclude(gt => gt.Toy)
+                .ToListAsync();
         }
 
         public async Task UpdatePlanAsync(Plan plan)
@@ -85,23 +62,6 @@ namespace LinguisticStimulationPlanner.Services
             }
         }
 
-        public Plan ClonePlan(Plan plan)
-        {
-            return new Plan
-            {
-                Id = plan.Id,
-                PatientId = plan.PatientId,
-                StartDate = plan.StartDate,
-                EndDate = plan.EndDate,
-                Notes = plan.Notes,
-                PlanGoals = plan.PlanGoals.Select(pg => new PlanGoal
-                {
-                    GoalId = pg.GoalId,
-                    ToyId = pg.ToyId
-                }).ToList()
-            };
-        }
-
         public async Task DeletePlanAsync(int planId)
         {
             var planToDelete = await _context.Plans.Include(p => p.PlanGoals).FirstOrDefaultAsync(p => p.Id == planId);
@@ -121,6 +81,33 @@ namespace LinguisticStimulationPlanner.Services
             _context.Plans.Add(plan);
             await _context.SaveChangesAsync();
             return plan;
+        }
+
+        public async Task AssignPlanGoalToPlan(Plan plan, List<PlanGoal> planGoalsToAdd)
+        {
+            foreach (var planGoal in planGoalsToAdd)
+            {
+                if (!plan.PlanGoals.Any(pg => pg.GoalId == planGoal.GoalId))
+                {
+                    plan.PlanGoals.Add(planGoal);
+                }
+            }
+            _context.Plans.Update(plan);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeassignPlanGoalFromPlan(Plan plan, List<PlanGoal> planGoalsToRemove)
+        {
+            foreach (var planGoal in planGoalsToRemove)
+            {
+                var existingGoal = plan.PlanGoals.FirstOrDefault(pg => pg.GoalId == planGoal.GoalId);
+                if (existingGoal != null)
+                {
+                    plan.PlanGoals.Remove(existingGoal);
+                }
+            }
+            _context.Plans.Update(plan);
+            await _context.SaveChangesAsync();
         }
     }
 }

@@ -86,11 +86,11 @@ namespace LinguisticStimulationPlanner.Components.Layout
             _selectedPatients.Clear();
         }
 
-        private void ToggleEditMode()
+        private async Task ToggleEditMode()
         {
             if (_isEditMode)
             {
-                SaveAllPatientsAsync();
+                await SaveAllPatientsAsync();
             }
             else
             {

@@ -8,7 +8,7 @@ namespace LinguisticStimulationPlanner.Models
 		public string Name { get; set; }
 		public string Language { get; set; }
 		public string Email { get; set; }
-		public int LocationId { get; set; }
+		public int? LocationId { get; set; }
 		public Location Location { get; set; }
 
 		public ICollection<PatientGoal> PatientGoals { get; set; } = new List<PatientGoal>();
@@ -16,8 +16,7 @@ namespace LinguisticStimulationPlanner.Models
 
         public bool IsValidPatient()
         {
-			bool test = !(string.IsNullOrEmpty(Name) || string.IsNullOrEmpty(Language) || string.IsNullOrEmpty(Email));
-			return test;
+			return !(string.IsNullOrEmpty(Name) || string.IsNullOrEmpty(Language) || string.IsNullOrEmpty(Email));
         }
     }
 }

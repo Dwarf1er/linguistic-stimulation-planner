@@ -8,6 +8,7 @@
 		<SelfContained>true</SelfContained>
 		<IncludeAllContentForSelfExtract>true</IncludeAllContentForSelfExtract>
 		<GenerateEmbeddedFilesManifest>true</GenerateEmbeddedFilesManifest>
+		<RuntimeIdentifier>$(RuntimeIdentifier)</RuntimeIdentifier>
 		<DebugType>embedded</DebugType>
 		<PublishAot>false</PublishAot>
 	</PropertyGroup>
@@ -38,8 +39,8 @@
 
 	<ItemGroup>
 		<EmbeddedResource Include="wwwroot\**" />
-		<EmbeddedResource Include="..\Common\bin\Release\net8.0\publish\**" />
-		<EmbeddedResource Remove="..\Common\bin\Release\net8.0\publish\*.*" />
+		<EmbeddedResource Include="..\Common\bin\Release\net8.0\$(RuntimeIdentifier)\publish\**" />
+		<EmbeddedResource Remove="..\Common\bin\Release\net8.0\$(RuntimeIdentifier)\publish\*.*" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -1,0 +1,69 @@
+name: Build and Release
+
+on:
+    push:
+        branches:
+            - master
+
+jobs:
+    changelog:
+        runs-on: ubuntu-latest
+        outputs:
+            version: ${{ steps.changelog.outputs.version }}
+            tag: ${{ steps.changelog.outputs.tag }}
+            changelog_text: ${{ steps.changelog.outputs.changelog }}
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v4
+
+            - name: Generate Changelog
+              id: changelog
+              uses: TriPSs/conventional-changelog-action@v6
+              with:
+                  github-token: ${{ secrets.GITHUB_TOKEN }}
+
+    build_and_release:
+        runs-on: ubuntu-latest
+        needs: changelog
+        steps:
+            - name: Checkout Code
+              uses: actions/checkout@v4
+
+            - name: Setup .NET SDK
+              uses: actions/setup-dotnet@v4
+              with:
+                  dotnet-version: 8.0
+
+            - name: Build for linux-x64
+              run: |
+                  dotnet publish -c Release -r linux-x64 ./Common/Common.csproj
+                  dotnet publish -c Release -r linux-x64 ./LinguisticStimulationPlanner/LinguisticStimulationPlanner.csproj /p:Version=${{ needs.changelog.outputs.version }}
+                  mkdir -p artifacts/linux-x64
+                  cp ./LinguisticStimulationPlanner/bin/Release/net8.0/linux-x64/publish/LinguisticStimulationPlanner artifacts/linux-x64/LinguisticStimulationPlanner-linux-x64-${{ needs.changelog.outputs.tag }}
+
+            - name: Build for win-x64
+              run: |
+                  dotnet publish -c Release -r win-x64 ./Common/Common.csproj
+                  dotnet publish -c Release -r win-x64 ./LinguisticStimulationPlanner/LinguisticStimulationPlanner.csproj /p:Version=${{ needs.changelog.outputs.version }}
+                  mkdir -p artifacts/win-x64
+                  cp ./LinguisticStimulationPlanner/bin/Release/net8.0/win-x64/publish/LinguisticStimulationPlanner.exe artifacts/win-x64/LinguisticStimulationPlanner-win-x64-${{ needs.changelog.outputs.tag }}.exe
+
+            - name: Build for osx-x64
+              run: |
+                  dotnet publish -c Release -r osx-x64 ./Common/Common.csproj
+                  dotnet publish -c Release -r osx-x64 ./LinguisticStimulationPlanner/LinguisticStimulationPlanner.csproj /p:Version=${{ needs.changelog.outputs.version }}
+                  mkdir -p artifacts/osx-x64
+                  cp ./LinguisticStimulationPlanner/bin/Release/net8.0/osx-x64/publish/LinguisticStimulationPlanner artifacts/osx-x64/LinguisticStimulationPlanner-osx-x64-${{ needs.changelog.outputs.tag }}
+
+            - name: Create GitHub Release
+              uses: softprops/action-gh-release@v2
+              with:
+                  name: "Release ${{ needs.changelog.outputs.tag }}"
+                  body: ${{ needs.changelog.outputs.changelog_text }}
+                  tag_name: ${{ needs.changelog.outputs.tag }}
+                  files: |
+                      artifacts/linux-x64/*
+                      artifacts/win-x64/*
+                      artifacts/osx-x64/*
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

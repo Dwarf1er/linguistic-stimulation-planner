@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace LinguisticStimulationPlanner.Models
+﻿namespace LinguisticStimulationPlanner.Models
 {
     public class PlanGoal
     {

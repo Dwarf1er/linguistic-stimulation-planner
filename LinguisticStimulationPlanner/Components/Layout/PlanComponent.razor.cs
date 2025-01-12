@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LinguisticStimulationPlanner.Components.Dialog;
+using System;
 
 namespace LinguisticStimulationPlanner.Components.Layout
 {
@@ -16,29 +17,86 @@ namespace LinguisticStimulationPlanner.Components.Layout
         [Inject] IDialogService DialogService { get; set; }
 
         private List<Plan> _plans = new List<Plan>();
-        private List<Patient> _patients = new List<Patient>();
         private HashSet<Plan> _selectedPlans = new HashSet<Plan>();
-        private bool _isEditMode = false;
         private Plan _newPlan = new Plan();
+        private List<PlanGoal> _newPlanGoals = new List<PlanGoal>();
+        private List<Patient> _patients = new List<Patient>();
+        private List<Plan> _originalPlans = new List<Plan>();
+        private string _searchText = string.Empty;
+        private bool _showActivePlansOnly = true;
+        private bool _isEditMode = false;
+
+        private IEnumerable<Plan> FilteredPlans => _plans
+            .Where(p => !_showActivePlansOnly || p.EndDate == null || p.EndDate >= DateTime.Today)
+            .Where(p => string.IsNullOrWhiteSpace(_searchText) || PlanMatchesSearch(p));
 
         protected override async Task OnInitializedAsync()
         {
             _plans = await PlanService.GetPlansAsync();
             _patients = await PatientService.GetPatientsAsync();
+            _originalPlans = _plans.Select(plan => new Plan { Id = plan.Id, PatientId = plan.PatientId, Patient = plan.Patient, StartDate = plan.StartDate, EndDate = plan.EndDate, Notes = plan.Notes, PlanGoals = plan.PlanGoals}).ToList();
         }
 
-        private async Task AddNewPlan()
+        private async Task SavePlanAsync(Plan plan)
+        {
+            if (plan.Id == 0)
+            {
+                await PlanService.CreatePlanAsync(plan);
+
+                if(_newPlanGoals.Any())
+                {
+                    await PlanService.AssignPlanGoalToPlan(plan, _newPlanGoals);
+                }
+            }
+            else
+            {
+                await PlanService.UpdatePlanAsync(plan);
+            }
+
+            _plans = await PlanService.GetPlansAsync();
+            _originalPlans = _plans.Select(plan => new Plan { Id = plan.Id, PatientId = plan.PatientId, Patient = plan.Patient, StartDate = plan.StartDate, EndDate = plan.EndDate, Notes = plan.Notes, PlanGoals = plan.PlanGoals}).ToList();
+            _selectedPlans.Clear();
+        }
+
+        private async Task SaveAllPlansAsync()
+        {
+            _isEditMode = false;
+            List<Plan> validPlans = _plans.Where(plan => plan.IsValidPlan()).ToList();
+            foreach (Plan validPlan in validPlans)
+            {
+                await SavePlanAsync(validPlan);
+            }
+        }
+
+        private async Task DeleteSelectedPlansAsync()
+        {
+            _isEditMode = false;
+
+            List<Plan> plansToDelete = _selectedPlans.ToList();
+            foreach (Plan plan in plansToDelete)
+            {
+                await PlanService.DeletePlanAsync(plan.Id);
+            }
+
+            _plans = await PlanService.GetPlansAsync();
+            _selectedPlans.Clear();
+            _originalPlans = _plans.Select(plan => new Plan { Id = plan.Id, PatientId = plan.PatientId, Patient = plan.Patient, StartDate = plan.StartDate, EndDate = plan.EndDate, Notes = plan.Notes, PlanGoals = plan.PlanGoals}).ToList();
+        }
+
+        private void AddNewPlan()
         {
             _plans.Insert(0, _newPlan);
-            _newPlan = new Plan();
             _isEditMode = true;
+            _newPlanGoals = new List<PlanGoal>();
+            _newPlan = new Plan();
+            _selectedPlans.Clear();
         }
 
-        private void ToggleEditMode()
+        private async Task ToggleEditModeAsync()
         {
             if (_isEditMode)
             {
-                SaveAllPlansAsync();
+                await SaveAllPlansAsync();
             }
             else
             {
@@ -48,54 +106,47 @@ namespace LinguisticStimulationPlanner.Components.Layout
             _selectedPlans.Clear();
         }
 
-        private async Task SaveAllPlansAsync()
-        {
-            _isEditMode = false;
-            foreach (var plan in _plans.Where(p => p.Id == 0 || PlanService.IsPlanModified(p)))
-            {
-                if (plan.Id == 0)
-                {
-                    await PlanService.CreatePlanAsync(plan);
-                }
-                else
-                {
-                    await PlanService.UpdatePlanAsync(plan);
-                }
-            }
-            _plans = await PlanService.GetPlansAsync();
-        }
-
         private void DiscardChanges()
         {
-            _plans = _plans.Select(plan => PlanService.ClonePlan(plan)).ToList();
+            _plans = _originalPlans.Select(plan => new Plan { Id = plan.Id, PatientId = plan.PatientId, Patient = plan.Patient, StartDate = plan.StartDate, EndDate = plan.EndDate, Notes = plan.Notes, PlanGoals = plan.PlanGoals}).ToList();
             _isEditMode = false;
+            _selectedPlans.Clear();
         }
 
-        private async Task DeleteSelectedPlansAsync()
+        private bool PlanMatchesSearch(Plan plan)
         {
-            _isEditMode = false;
+            string search = _searchText.ToLower();
 
-            List<Plan> plansToDelete = _selectedPlans.ToList();
+            return (plan.Patient?.Name?.ToLower().Contains(search) ?? false)
+                || (plan.Notes?.ToLower().Contains(search) ?? false)
+                || plan.PlanGoals.Any(g => g.Goal.Name?.ToLower().Contains(search) ?? false)
+                || (plan.StartDate?.ToString("d").Contains(search) ?? false)
+                || (plan.EndDate?.ToString("d").Contains(search) ?? false);
+        }
 
-            foreach (var plan in plansToDelete)
+        private DateTime GetStartOfWeek()
+        {
+            DateTime currentDate = DateTime.Today;
+            int daysToSubstract = (int)currentDate.DayOfWeek;
+            if (daysToSubstract == 0)
             {
-                await PlanService.DeletePlanAsync(plan.Id);
+                return currentDate;
             }
 
-            _plans = await PlanService.GetPlansAsync();
-            _selectedPlans.Clear();
+            DateTime sunday = currentDate.AddDays(-daysToSubstract);
+            return sunday;
         }
 
         private async Task ShowDeleteConfirmationDialogAsync()
         {
             DialogParameters parameters = new DialogParameters
             {
-                { "Message", "Are you sure you want to delete the selected patients?" },
+                { "Message", "Are you sure you want to delete the selected plans?" },
                 { "ConfirmButton", "Delete" },
                 { "CancelButton", "Cancel" }
             };
 
-            IDialogReference dialog = DialogService.Show<ConfirmationDialog>("Delete Patients", parameters);
+            IDialogReference dialog = DialogService.Show<ConfirmationDialog>("Delete Plans", parameters);
             DialogResult result = await dialog.Result;
 
             if (!result.Canceled)
@@ -104,24 +155,51 @@ namespace LinguisticStimulationPlanner.Components.Layout
             }
         }
 
-        private async Task ShowGoalToyDialogAsync(Plan plan)
+        private async Task ShowPlanGoalSelectDialogAsync(Plan currentPlan)
         {
-            var parameters = new DialogParameters { { "Plan", plan } };
-            var dialog = DialogService.Show<GoalToySelectDialog>("Select Goals and Toys", parameters);
-            var result = await dialog.Result;
-
-            if (!result.Canceled && result.Data is Dictionary<Goal, Toy> selectedGoalsWithToys)
+            if (currentPlan.Patient == null && currentPlan.PatientId != null)
             {
-                plan.PlanGoals.Clear();
-                foreach (var kvp in selectedGoalsWithToys)
+                currentPlan.Patient = _patients.FirstOrDefault(p => p.Id == currentPlan.PatientId);
+            }
+
+            List<PlanGoal> assignedPlanGoals = currentPlan.PlanGoals.ToList();
+
+            DialogParameters parameters = new DialogParameters
+            {
+                { "Message", "Select goals to assign to the plan" },
+                { "Patient", currentPlan.Patient },
+                { "AssignedGoals", assignedPlanGoals }
+            };
+
+            IDialogReference dialog = DialogService.Show<PlanGoalSelectDialog>("Select Goals and Toys", parameters);
+            DialogResult result = await dialog.Result;
+
+            if (!result.Canceled)
+            {
+                List<PlanGoal> selectedPlanGoals = result.Data as List<PlanGoal>;
+
+                if(selectedPlanGoals != null)
                 {
-                    plan.PlanGoals.Add(new PlanGoal
+                    if(currentPlan.Id == 0)
                     {
-                        GoalId = kvp.Key.Id,
-                        Goal = kvp.Key,
-                        ToyId = kvp.Value?.Id,
-                        Toy = kvp.Value
-                    });
+                        _newPlanGoals = selectedPlanGoals;
+                    }
+
+                    else
+                    {
+                        List<PlanGoal> planGoalsToRemove = assignedPlanGoals.Where(pg => !selectedPlanGoals.Contains(pg)).ToList();
+                        List<PlanGoal> planGoalsToAdd = selectedPlanGoals.Where(pg => !assignedPlanGoals.Contains(pg)).ToList();
+
+                        if(planGoalsToRemove.Any())
+                        {
+                            await PlanService.DeassignPlanGoalFromPlan(currentPlan, planGoalsToRemove);
+                        }
+
+                        if(planGoalsToAdd.Any())
+                        {
+                            await PlanService.AssignPlanGoalToPlan(currentPlan, planGoalsToAdd);
+                        }
+                    }
                 }
             }
         }

@@ -21,6 +21,15 @@ namespace LinguisticStimulationPlanner.Services
             return await _context.Toys.Include(t => t.GoalToys).ThenInclude(gt => gt.Goal).ToListAsync();
         }
 
+        public async Task<List<Toy>> GetToysByGoalAsync(int goalId)
+        {
+            var goalToys = await _context.GoalToys
+                                          .Where(gt => gt.GoalId == goalId && gt.Toy.InInventory)
+                                          .Include(gt => gt.Toy)
+                                          .ToListAsync();
+            return goalToys.Select(gt => gt.Toy).ToList();
+        }
+
         public async Task<Toy> CreateToyAsync(Toy toy)
         {
             _context.Toys.Add(toy);

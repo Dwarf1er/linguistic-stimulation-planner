@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace LinguisticStimulationPlanner.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -62,7 +62,7 @@ namespace LinguisticStimulationPlanner.Migrations
                     Name = table.Column<string>(type: "TEXT", nullable: true),
                     Language = table.Column<string>(type: "TEXT", nullable: true),
                     Email = table.Column<string>(type: "TEXT", nullable: true),
-                    LocationId = table.Column<int>(type: "INTEGER", nullable: false)
+                    LocationId = table.Column<int>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -72,7 +72,7 @@ namespace LinguisticStimulationPlanner.Migrations
                         column: x => x.LocationId,
                         principalTable: "Locations",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -129,7 +129,7 @@ namespace LinguisticStimulationPlanner.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    PatientId = table.Column<int>(type: "INTEGER", nullable: false),
+                    PatientId = table.Column<int>(type: "INTEGER", nullable: true),
                     StartDate = table.Column<DateTime>(type: "TEXT", nullable: true),
                     EndDate = table.Column<DateTime>(type: "TEXT", nullable: true),
                     Notes = table.Column<string>(type: "TEXT", nullable: true)
@@ -142,7 +142,7 @@ namespace LinguisticStimulationPlanner.Migrations
                         column: x => x.PatientId,
                         principalTable: "Patients",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -163,7 +163,7 @@ namespace LinguisticStimulationPlanner.Migrations
                         column: x => x.GoalId,
                         principalTable: "Goals",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_PlanGoals_Plans_PlanId",
                         column: x => x.PlanId,

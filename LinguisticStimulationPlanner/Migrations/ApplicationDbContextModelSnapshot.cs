@@ -78,7 +78,7 @@ namespace LinguisticStimulationPlanner.Migrations
                     b.Property<string>("Language")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("LocationId")
+                    b.Property<int?>("LocationId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
@@ -118,7 +118,7 @@ namespace LinguisticStimulationPlanner.Migrations
                     b.Property<string>("Notes")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("PatientId")
+                    b.Property<int?>("PatientId")
                         .HasColumnType("INTEGER");
 
                     b.Property<DateTime?>("StartDate")
@@ -198,8 +198,7 @@ namespace LinguisticStimulationPlanner.Migrations
                     b.HasOne("LinguisticStimulationPlanner.Models.Location", "Location")
                         .WithMany("Patients")
                         .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Location");
                 });
@@ -228,8 +227,7 @@ namespace LinguisticStimulationPlanner.Migrations
                     b.HasOne("LinguisticStimulationPlanner.Models.Patient", "Patient")
                         .WithMany("Plans")
                         .HasForeignKey("PatientId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Patient");
                 });
@@ -239,7 +237,7 @@ namespace LinguisticStimulationPlanner.Migrations
                     b.HasOne("LinguisticStimulationPlanner.Models.Goal", "Goal")
                         .WithMany()
                         .HasForeignKey("GoalId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("LinguisticStimulationPlanner.Models.Plan", "Plan")

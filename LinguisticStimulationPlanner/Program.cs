@@ -8,6 +8,8 @@ using Photino.Blazor;
 using Microsoft.Extensions.FileProviders;
 using System;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
+using System.IO;
 
 namespace LinguisticStimulationPlanner
 {
@@ -25,11 +27,13 @@ namespace LinguisticStimulationPlanner
 
             PhotinoBlazorApp app = appBuilder.Build();
 
+            string iconPath = ExtractEmbeddedResourceToTempFile("favicon.ico");
+
             app.MainWindow
                 .SetSize(1400, 800)
                 .SetLogVerbosity(0)
                 .SetDevToolsEnabled(EnvironmentInfo.IsDevelopment)
-                .SetIconFile("wwwroot/favicon.ico")
+                .SetIconFile(iconPath)
                 .SetTitle("Linguistic Stimulation Planner");
 
             AppDomain.CurrentDomain.ProcessExit += (sender, eventArgs) =>
@@ -63,6 +67,32 @@ namespace LinguisticStimulationPlanner
             services.AddScoped<PatientService>();
             services.AddScoped<PlanService>();
             services.AddScoped<ToyService>();
+        }
+
+        private static string ExtractEmbeddedResourceToTempFile(string fileName)
+        {
+            string resourceNamespace = typeof(Program).Namespace;
+            string resourceName = $"{resourceNamespace}.wwwroot.{fileName}";
+
+            Assembly assembly = Assembly.GetExecutingAssembly();
+
+            using (Stream resourceStream = assembly.GetManifestResourceStream(resourceName))
+            {
+                if (resourceStream == null)
+                {
+                    Console.WriteLine($"Resource {resourceName} not found.");
+                    return null;
+                }
+
+                string tempFile = Path.Combine(Path.GetTempPath(), fileName);
+
+                using (FileStream fileStream = new FileStream(tempFile, FileMode.Create, FileAccess.Write))
+                {
+                    resourceStream.CopyTo(fileStream);
+                }
+
+                return tempFile;
+            }
         }
     }
 }

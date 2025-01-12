@@ -20,7 +20,7 @@ namespace LinguisticStimulationPlanner.Components.Layout
         private List<Goal> _newToyGoals = new List<Goal>();
         private bool _isEditMode = false;
         private List<Toy> _originalToys = new List<Toy>();
-        private bool _showInInventoryOnly = false;
+        private bool _showInInventoryOnly = true;
 
         protected override async Task OnInitializedAsync()
         {
