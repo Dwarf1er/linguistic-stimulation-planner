@@ -1,7 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using LinguisticStimulationPlanner.Utilities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
-using Microsoft.Extensions.Configuration;
-using System.IO;
 
 namespace LinguisticStimulationPlanner.Data
 {
@@ -9,13 +8,8 @@ namespace LinguisticStimulationPlanner.Data
 	{
 		public ApplicationDbContext CreateDbContext(string[] args = null)
 		{
-			var configuration = new ConfigurationBuilder()
-				.SetBasePath(Directory.GetCurrentDirectory())
-				.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-				.Build();
-
 			var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>();
-			optionsBuilder.UseSqlite(configuration.GetConnectionString("DefaultConnection"));
+			optionsBuilder.UseSqlite($"Data Source={DatabaseSetup.DevelopmentDatabasePath}");
 
 			return new ApplicationDbContext(optionsBuilder.Options);
 		}

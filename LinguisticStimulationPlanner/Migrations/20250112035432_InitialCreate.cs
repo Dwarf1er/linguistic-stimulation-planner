@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -122,6 +123,61 @@ namespace LinguisticStimulationPlanner.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Plans",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    PatientId = table.Column<int>(type: "INTEGER", nullable: false),
+                    StartDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    EndDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    Notes = table.Column<string>(type: "TEXT", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Plans", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Plans_Patients_PatientId",
+                        column: x => x.PatientId,
+                        principalTable: "Patients",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "PlanGoals",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    PlanId = table.Column<int>(type: "INTEGER", nullable: false),
+                    GoalId = table.Column<int>(type: "INTEGER", nullable: false),
+                    ToyId = table.Column<int>(type: "INTEGER", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_PlanGoals", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_PlanGoals_Goals_GoalId",
+                        column: x => x.GoalId,
+                        principalTable: "Goals",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_PlanGoals_Plans_PlanId",
+                        column: x => x.PlanId,
+                        principalTable: "Plans",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_PlanGoals_Toys_ToyId",
+                        column: x => x.ToyId,
+                        principalTable: "Toys",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_GoalToys_ToyId",
                 table: "GoalToys",
@@ -136,6 +192,26 @@ namespace LinguisticStimulationPlanner.Migrations
                 name: "IX_Patients_LocationId",
                 table: "Patients",
                 column: "LocationId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlanGoals_GoalId",
+                table: "PlanGoals",
+                column: "GoalId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlanGoals_PlanId",
+                table: "PlanGoals",
+                column: "PlanId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_PlanGoals_ToyId",
+                table: "PlanGoals",
+                column: "ToyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Plans_PatientId",
+                table: "Plans",
+                column: "PatientId");
         }
 
         /// <inheritdoc />
@@ -148,10 +224,16 @@ namespace LinguisticStimulationPlanner.Migrations
                 name: "PatientGoals");
 
             migrationBuilder.DropTable(
-                name: "Toys");
+                name: "PlanGoals");
 
             migrationBuilder.DropTable(
                 name: "Goals");
+
+            migrationBuilder.DropTable(
+                name: "Plans");
+
+            migrationBuilder.DropTable(
+                name: "Toys");
 
             migrationBuilder.DropTable(
                 name: "Patients");

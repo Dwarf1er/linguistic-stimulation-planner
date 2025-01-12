@@ -1,0 +1,95 @@
+﻿@page "/plan"
+@inherits ComponentBase
+@using LinguisticStimulationPlanner.Models
+@using MudBlazor
+
+<MudGrid>
+    <MudItem xs="12">
+        <MudText Typo="Typo.h4">Plan Management</MudText>
+    </MudItem>
+
+    <MudItem xs="12">
+        <MudButtonGroup Style="float: right;" OverrideStyles="false">
+            <MudButton Color="Color.Primary" OnClick="AddNewPlan" StartIcon="@Icons.Material.Filled.Add">Add</MudButton>
+            <MudButton Color="Color.Primary" OnClick="ToggleEditMode" StartIcon="@(_isEditMode ? Icons.Material.Filled.Save : Icons.Material.Filled.Edit)">
+                @(_isEditMode ? "Save" : "Edit")
+            </MudButton>
+            @if (_isEditMode)
+            {
+                <MudButton Color="Color.Primary" OnClick="DiscardChanges" StartIcon="@Icons.Material.Filled.Close">Discard Changes</MudButton>
+            }
+            <MudButton Color="Color.Error" IconColor="Color.Error" OnClick="ShowDeleteConfirmationDialogAsync" Disabled="@(_selectedPlans.Count < 1 || !_isEditMode)" StartIcon="@Icons.Material.Filled.Delete">Delete</MudButton>
+        </MudButtonGroup>
+    </MudItem>
+</MudGrid>
+
+<MudGrid>
+    <MudItem xs="12">
+        <MudTable Items="@_plans" Hover="true" Dense="false" MultiSelection="@_isEditMode" @bind-SelectedItems="_selectedPlans">
+            <HeaderContent>
+                <MudTh>Patient</MudTh>
+                <MudTh>Start Date</MudTh>
+                <MudTh>End Date</MudTh>
+                <MudTh>Notes</MudTh>
+                <MudTh>Goals</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Patient">
+                    @if (_isEditMode)
+                    {
+                        <MudSelect @bind-Value="context.PatientId" T="int">
+                            @foreach (var patient in _patients)
+                            {
+                                <MudSelectItem T="int" Value="patient.Id">@patient.Name</MudSelectItem>
+                            }
+                        </MudSelect>
+                    }
+                    else
+                    {
+                        @context.Patient?.Name
+                    }
+                </MudTd>
+                <MudTd DataLabel="Start Date">
+                    @if (_isEditMode)
+                    {
+                        <MudDatePicker @bind-Date="context.StartDate" />
+                    }
+                    else
+                    {
+                        @context.StartDate?.ToShortDateString();
+                    }
+                </MudTd>
+                <MudTd DataLabel="End Date">
+                    @if (_isEditMode)
+                    {
+                        <MudDatePicker @bind-Date="context.EndDate" />
+                    }
+                    else
+                    {
+                        @context.EndDate?.ToShortDateString();
+                    }
+                </MudTd>
+                <MudTd DataLabel="Notes">
+                    @if (_isEditMode)
+                    {
+                        <MudTextField @bind-Value="context.Notes" Immediate="true" />
+                    }
+                    else
+                    {
+                        @context.Notes
+                    }
+                </MudTd>
+                <MudTd DataLabel="Goals">
+                    @foreach (var goal in context.PlanGoals.Select(pg => pg.Goal))
+                    {
+                        <MudChip T="string" Color="Color.Primary">@goal.Name</MudChip>
+                    }
+                    @if (_isEditMode)
+                    {
+                        <MudFab Color="Color.Tertiary" Size="Size.Small" StartIcon="@Icons.Material.Filled.Add" OnClick="() => ShowGoalToyDialogAsync(context)" />
+                    }
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </MudItem>
+</MudGrid>

@@ -7,11 +7,13 @@ namespace LinguisticStimulationPlanner.Utilities
 {
     public static class DatabaseSetup
     {
+        public static string DevelopmentDatabasePath = "./Data/Database.db";
+
         public static string GetDatabasePath()
         {
             if (EnvironmentInfo.IsDevelopment)
             {
-                return "./Data/Database.db";
+                return DevelopmentDatabasePath;
             }
 
             string test = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "LinguisticStimulationPlanner", "Database.db");

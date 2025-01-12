@@ -15,6 +15,8 @@ namespace LinguisticStimulationPlanner.Data
 		public DbSet<Location> Locations { get; set; }
 		public DbSet<Patient> Patients { get; set; }
 		public DbSet<PatientGoal> PatientGoals { get; set; }
+		public DbSet<Plan> Plans { get; set; }
+		public DbSet<PlanGoal> PlanGoals { get; set; }
 		public DbSet<Toy> Toys { get; set; }
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -52,6 +54,30 @@ namespace LinguisticStimulationPlanner.Data
 				.HasOne(gt => gt.Toy)
 				.WithMany(t => t.GoalToys)
 				.HasForeignKey(gt => gt.ToyId);
+
+            modelBuilder.Entity<Plan>()
+                .HasOne(p => p.Patient)
+                .WithMany(pat => pat.Plans)
+                .HasForeignKey(p => p.PatientId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<PlanGoal>()
+                .HasOne(pg => pg.Plan)
+                .WithMany(p => p.PlanGoals)
+                .HasForeignKey(pg => pg.PlanId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<PlanGoal>()
+                .HasOne(pg => pg.Goal)
+                .WithMany()
+                .HasForeignKey(pg => pg.GoalId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<PlanGoal>()
+                .HasOne(pg => pg.Toy)
+                .WithMany()
+                .HasForeignKey(pg => pg.ToyId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
 	}
 }

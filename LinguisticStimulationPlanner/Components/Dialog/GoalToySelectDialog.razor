@@ -1,0 +1,45 @@
+﻿@inherits ComponentBase
+@using LinguisticStimulationPlanner.Models
+@using MudBlazor
+
+
+<MudDialog>
+    <DialogContent>
+        <MudGrid>
+            <MudItem xs="12">
+                <MudText Typo="Typo.subtitle1">Assigned Goals</MudText>
+            </MudItem>
+            @if (Plan?.Patient?.PatientGoals != null && Plan.Patient.PatientGoals.Any())
+            {
+                @foreach (var goal in Plan.Patient.PatientGoals.Select(pg => pg.Goal))
+                {
+                    <MudGrid>
+                        <MudItem xs="6">
+                            <MudCheckBox T="bool" @bind-Checked="_selectedGoals[goal]" Label="@goal.Name" />
+                        </MudItem>
+                        <MudItem xs="6">
+                            @if (_selectedGoals[goal])
+                            {
+                                <MudSelect @bind-Value="_selectedGoalToys[goal]" T="Toy" Label="Select Toy">
+                                    @foreach (var toy in goal.GoalToys.Select(gt => gt.Toy))
+                                    {
+                                        <MudSelectItem T="Toy" Value="toy">@toy.Name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            }
+                        </MudItem>
+                    </MudGrid>
+                }
+            }
+            else
+            {
+                <MudText Typo="Typo.body1">No goals available for the selected patient.</MudText>
+            }
+        </MudGrid>
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton Color="Color.Primary" OnClick="Save">Save</MudButton>
+        <MudButton Color="Color.Secondary" OnClick="Cancel">Cancel</MudButton>
+    </DialogActions>
+</MudDialog>

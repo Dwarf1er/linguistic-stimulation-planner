@@ -61,6 +61,7 @@ namespace LinguisticStimulationPlanner
             services.AddScoped<GoalService>();
             services.AddScoped<LocationService>();
             services.AddScoped<PatientService>();
+            services.AddScoped<PlanService>();
             services.AddScoped<ToyService>();
         }
     }
