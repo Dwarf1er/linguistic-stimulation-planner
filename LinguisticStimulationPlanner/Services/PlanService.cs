@@ -18,7 +18,11 @@ namespace LinguisticStimulationPlanner.Services
 
         public async Task<List<Plan>> GetPlansAsync()
         {
-            return await _context.Plans.ToListAsync();
+            return await _context.Plans.Include(p => p.PlanGoals)
+                .ThenInclude(pg => pg.Goal)
+                .ThenInclude(g => g.GoalToys)
+                .ThenInclude(gt => gt.Toy)
+                .ToListAsync();
         }
 
         public async Task UpdatePlanAsync(Plan plan)

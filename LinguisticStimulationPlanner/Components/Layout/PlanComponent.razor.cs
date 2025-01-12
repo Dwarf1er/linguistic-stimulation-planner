@@ -27,8 +27,9 @@ namespace LinguisticStimulationPlanner.Components.Layout
         {
             _plans = await PlanService.GetPlansAsync();
             _patients = await PatientService.GetPatientsAsync();
-            _originalPlans = _plans.Select(plan => new Plan { Id = plan.Id, PatientId = plan.PatientId, StartDate = plan.StartDate, EndDate = plan.EndDate, Notes = plan.Notes, PlanGoals = plan.PlanGoals}).ToList();
+            _originalPlans = _plans.Select(plan => new Plan { Id = plan.Id, PatientId = plan.PatientId, Patient = plan.Patient, StartDate = plan.StartDate, EndDate = plan.EndDate, Notes = plan.Notes, PlanGoals = plan.PlanGoals}).ToList();
         }
+
         private async Task SavePlanAsync(Plan plan)
         {
             if (plan.Id == 0)
@@ -46,7 +47,7 @@ namespace LinguisticStimulationPlanner.Components.Layout
             }
 
             _plans = await PlanService.GetPlansAsync();
-            _originalPlans = _plans.Select(plan => new Plan { Id = plan.Id, PatientId = plan.PatientId, StartDate = plan.StartDate, EndDate = plan.EndDate, Notes = plan.Notes, PlanGoals = plan.PlanGoals}).ToList();
+            _originalPlans = _plans.Select(plan => new Plan { Id = plan.Id, PatientId = plan.PatientId, Patient = plan.Patient, StartDate = plan.StartDate, EndDate = plan.EndDate, Notes = plan.Notes, PlanGoals = plan.PlanGoals}).ToList();
             _selectedPlans.Clear();
         }
 
@@ -72,7 +73,7 @@ namespace LinguisticStimulationPlanner.Components.Layout
 
             _plans = await PlanService.GetPlansAsync();
             _selectedPlans.Clear();
-            _originalPlans = _plans.Select(plan => new Plan { Id = plan.Id, PatientId = plan.PatientId, StartDate = plan.StartDate, EndDate = plan.EndDate, Notes = plan.Notes, PlanGoals = plan.PlanGoals}).ToList();
+            _originalPlans = _plans.Select(plan => new Plan { Id = plan.Id, PatientId = plan.PatientId, Patient = plan.Patient, StartDate = plan.StartDate, EndDate = plan.EndDate, Notes = plan.Notes, PlanGoals = plan.PlanGoals}).ToList();
         }
 
         private void AddNewPlan()
@@ -100,7 +101,7 @@ namespace LinguisticStimulationPlanner.Components.Layout
 
         private void DiscardChanges()
         {
-            _plans = _originalPlans.Select(plan => new Plan { Id = plan.Id, PatientId = plan.PatientId, StartDate = plan.StartDate, EndDate = plan.EndDate, Notes = plan.Notes, PlanGoals = plan.PlanGoals}).ToList();
+            _plans = _originalPlans.Select(plan => new Plan { Id = plan.Id, PatientId = plan.PatientId, Patient = plan.Patient, StartDate = plan.StartDate, EndDate = plan.EndDate, Notes = plan.Notes, PlanGoals = plan.PlanGoals}).ToList();
             _isEditMode = false;
             _selectedPlans.Clear();
         }
