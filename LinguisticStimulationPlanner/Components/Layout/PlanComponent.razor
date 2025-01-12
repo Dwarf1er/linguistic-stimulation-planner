@@ -11,7 +11,7 @@
     <MudItem xs="12">
         <MudButtonGroup Style="float: right;" OverrideStyles="false">
             <MudButton Color="Color.Primary" OnClick="AddNewPlan" StartIcon="@Icons.Material.Filled.Add">Add</MudButton>
-            <MudButton Color="Color.Primary" OnClick="ToggleEditMode" StartIcon="@(_isEditMode ? Icons.Material.Filled.Save : Icons.Material.Filled.Edit)">
+            <MudButton Color="Color.Primary" OnClick="ToggleEditModeAsync" StartIcon="@(_isEditMode ? Icons.Material.Filled.Save : Icons.Material.Filled.Edit)">
                 @(_isEditMode ? "Save" : "Edit")
             </MudButton>
             @if (_isEditMode)
@@ -30,17 +30,18 @@
                 <MudTh>Patient</MudTh>
                 <MudTh>Start Date</MudTh>
                 <MudTh>End Date</MudTh>
-                <MudTh>Notes</MudTh>
                 <MudTh>Goals</MudTh>
+                <MudTh>Notes</MudTh>
             </HeaderContent>
             <RowTemplate>
                 <MudTd DataLabel="Patient">
                     @if (_isEditMode)
                     {
-                        <MudSelect @bind-Value="context.PatientId" T="int">
+                        <MudSelect @bind-Value="context.PatientId" T="int?" Placeholder="Select Patient">
+
                             @foreach (var patient in _patients)
                             {
-                                <MudSelectItem T="int" Value="patient.Id">@patient.Name</MudSelectItem>
+                                <MudSelectItem T="int?" Value="patient.Id">@patient.Name</MudSelectItem>
                             }
                         </MudSelect>
                     }
@@ -69,26 +70,33 @@
                         @context.EndDate?.ToShortDateString();
                     }
                 </MudTd>
-                <MudTd DataLabel="Notes">
+                <MudTd DataLabel="Goals">
+                    @foreach (var planGoal in context.PlanGoals)
+                    {
+                        <MudChip T="string" Color="Color.Primary">
+                            @planGoal.Goal.Name
+                            @if (planGoal.Toy != null)
+                            {
+                                <MudChip T="string" Color="Color.Secondary"> @planGoal.Toy.Name </MudChip>
+                            }
+                        </MudChip>
+                    }
                     @if (_isEditMode)
                     {
-                        <MudTextField @bind-Value="context.Notes" Immediate="true" />
+                        <MudFab Color="Color.Tertiary" Size="Size.Small" StartIcon="@Icons.Material.Filled.Add" OnClick="() => ShowPlanGoalSelectDialogAsync(context)" />
+                    }
+                </MudTd>
+                <MudTd DataLabel="Notes" Style="max-width: 10rem">
+                    @if (_isEditMode)
+                    {
+                        <MudTextField @bind-Value="context.Notes" Lines="2" MaxLength="200" Immediate="true" />
                     }
                     else
                     {
                         @context.Notes
                     }
                 </MudTd>
-                <MudTd DataLabel="Goals">
-                    @foreach (var goal in context.PlanGoals.Select(pg => pg.Goal))
-                    {
-                        <MudChip T="string" Color="Color.Primary">@goal.Name</MudChip>
-                    }
-                    @if (_isEditMode)
-                    {
-                        <MudFab Color="Color.Tertiary" Size="Size.Small" StartIcon="@Icons.Material.Filled.Add" OnClick="() => ShowGoalToyDialogAsync(context)" />
-                    }
-                </MudTd>
+
             </RowTemplate>
         </MudTable>
     </MudItem>

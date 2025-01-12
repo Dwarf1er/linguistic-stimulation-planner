@@ -81,10 +81,10 @@
                 <MudTd DataLabel="Location">
                     @if (_isEditMode)
                     {
-                        <MudSelect @bind-Value="context.LocationId" T="int">
+                        <MudSelect @bind-Value="context.LocationId" T="int?" Placeholder="Select Location">
                             @foreach (Location location in _locations)
                             {
-                                <MudSelectItem T="int" Value="location.Id">@location.Name</MudSelectItem>
+                                <MudSelectItem T="int?" Value="location.Id">@location.Name</MudSelectItem>
                             }
                         </MudSelect>
                     }

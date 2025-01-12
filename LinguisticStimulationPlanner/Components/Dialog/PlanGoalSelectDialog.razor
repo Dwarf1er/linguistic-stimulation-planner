@@ -1,0 +1,32 @@
+﻿@inherits ComponentBase
+
+<MudDialog>
+    <DialogContent>
+        <MudText Typo="Typo.h6">@Message</MudText>
+        <MudTable Items="@_planGoals" Hover="true" Dense="false">
+            <HeaderContent>
+                <MudTh>Goal</MudTh>
+                <MudTh>Toy</MudTh>
+            </HeaderContent>
+            <RowTemplate>
+                <MudTd DataLabel="Goal">
+                    <MudCheckBox T="bool" @bind-Value="context.IsSelected" />
+                    @context.Goal.Name
+                </MudTd>
+                <MudTd DataLabel="Toy">
+                    <MudSelect @bind-Value="context.SelectedToyId" T="int?" Placeholder="None" Disabled="!context.IsSelected">
+                        @foreach (var toy in context.AvailableToys)
+                        {
+                            <MudSelectItem T="int?" Value="toy.Id">@toy.Name</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudTd>
+            </RowTemplate>
+        </MudTable>
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="Cancel" Color="Color.Secondary">Cancel</MudButton>
+        <MudButton OnClick="Save" Color="Color.Primary">Save</MudButton>
+    </DialogActions>
+</MudDialog>
